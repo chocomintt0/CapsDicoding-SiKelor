@@ -1,34 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+"use client"
+
+import { useState, useEffect } from "react"
+import { startViewTransition } from "./utils/transitions"
+import Navbar from "./components/Navbar"
+import Hero from "./components/Hero"
+import Articles from "./pages/Articles"
+import Events from "./pages/Events"
+import Scan from "./pages/Scan"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentPage, setCurrentPage] = useState("home")
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  const handleNavigate = (page) => {
+    if (isTransitioning || page === currentPage) return
+
+    console.log("Navigating to:", page)
+    setIsTransitioning(true)
+
+    // Use View Transition API for smooth page transitions
+    startViewTransition(() => {
+      setCurrentPage(page)
+    })
+
+    // Reset transition state after animation completes
+    setTimeout(() => {
+      setIsTransitioning(false)
+    }, 300)
+  }
+
+  // Add view transition names to page content
+  useEffect(() => {
+    const pageContent = document.querySelector("[data-page-content]")
+    if (pageContent) {
+      pageContent.style.viewTransitionName = "page-content"
+    }
+  }, [currentPage])
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "articles":
+        return <Articles onNavigate={handleNavigate} />
+      case "event":
+        return <Events onNavigate={handleNavigate} />
+      case "about":
+        return (
+          <div className="min-h-screen bg-white flex items-center justify-center" data-page-content>
+            <h1 className="text-2xl text-gray-600">About Page - Coming Soon</h1>
+          </div>
+        )
+      case "scan":
+        return <Scan onNavigate={handleNavigate} />
+      default:
+        return (
+          <div className="relative" data-page-content>
+            <Navbar onNavigate={handleNavigate} />
+            <Hero onNavigate={handleNavigate} />
+          </div>
+        )
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="relative">
+      <div data-page-content>{renderPage()}</div>
+    </div>
   )
 }
 
