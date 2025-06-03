@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+"use client"
+
+import { useState } from "react"
+import Navbar from "./components/Navbar"
+import Hero from "./components/Hero"
+import Articles from "./pages/Articles"
+import Events from "./pages/Events"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentPage, setCurrentPage] = useState("home")
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  const handleNavigate = (page) => {
+    console.log("Navigating to:", page)
+    setCurrentPage(page)
+  }
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "articles":
+        return <Articles onNavigate={handleNavigate} />
+      case "event":
+        return <Events onNavigate={handleNavigate} />
+      case "about":
+        return (
+          <div className="min-h-screen bg-white flex items-center justify-center">
+            <h1 className="text-2xl text-gray-600">About Page - Coming Soon</h1>
+          </div>
+        )
+      default:
+        return (
+          <div className="relative">
+            <Navbar onNavigate={handleNavigate} />
+            <Hero />
+          </div>
+        )
+    }
+  }
+
+  return <div className="relative">{renderPage()}</div>
 }
 
 export default App
