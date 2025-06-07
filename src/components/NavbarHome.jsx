@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react'; // pastikan kamu punya lucide-react, atau ganti ikon
+import { Menu, X } from 'lucide-react'; 
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
