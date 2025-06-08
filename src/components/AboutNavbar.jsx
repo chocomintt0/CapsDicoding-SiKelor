@@ -1,22 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { startViewTransition } from "../utils/transitions"
 
-export default function Navbar({ onNavigate, currentPage = "home" }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export default function AboutNavbar({ onNavigate }) {
   const [isScrolled, setIsScrolled] = useState(false)
-
-  const handleNavigation = (page) => {
-    startViewTransition(() => {
-      onNavigate(page)
-    })
-    setIsMobileMenuOpen(false)
-  }
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,17 +16,24 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const handleNavigation = (page) => {
+    onNavigate(page)
+    setIsMobileMenuOpen(false)
+  }
+
   return (
     <>
       <nav
-        className={`fixed w-full z-50 flex items-center justify-between px-4 md:px-[40px] py-3 md:py-5 transition-all duration-300 ${
-          isScrolled ? "bg-black/20 backdrop-blur-md border-b border-white/20 top-0" : "bg-transparent my-2 md:my-4"
-        } h-[70px] md:h-[80px]`}
+        className={`fixed top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-4 md:px-8 py-4 md:py-6 transition-all duration-300 ${
+          isScrolled ? "bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200/20" : "bg-white"
+        }`}
       >
-        <img src="/src/assets/logo-home.png" alt="SIKELOR Logo" className="h-[80px] md:h-[105px] object-contain" />
+        <div className="flex items-center">
+          <img src="/src/assets/logo-away.png" alt="SIKELOR Logo" className="h-8 md:h-12 object-contain" />
+        </div>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex space-x-8 font-semibold text-white gap-6">
+        <ul className="hidden md:flex space-x-8 font-medium text-gray-700">
           <li>
             <a
               href="#"
@@ -46,7 +41,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                 e.preventDefault()
                 handleNavigation("home")
               }}
-              className="transition-all duration-200 relative after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
+              className="hover:text-green-600 transition-colors duration-200"
             >
               Home
             </a>
@@ -58,7 +53,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                 e.preventDefault()
                 handleNavigation("event")
               }}
-              className="transition-all duration-200 relative after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
+              className="hover:text-green-600 transition-colors duration-200"
             >
               Event
             </a>
@@ -70,7 +65,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                 e.preventDefault()
                 handleNavigation("articles")
               }}
-              className="transition-all duration-200 relative after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
+              className="hover:text-green-600 transition-colors duration-200"
             >
               Artikel
             </a>
@@ -82,17 +77,22 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                 e.preventDefault()
                 handleNavigation("collections")
               }}
-              className="transition-all duration-200 relative after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
+              className="hover:text-green-600 transition-colors duration-200"
             >
               Collections
+            </a>
+          </li>
+          <li>
+            <a href="#" className="text-green-600 font-semibold">
+              About
             </a>
           </li>
         </ul>
 
         {/* Mobile Menu Button */}
         <button
-          onClick={toggleMobileMenu}
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden text-gray-700"
           aria-label="Toggle mobile menu"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,17 +112,14 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#475F45] z-50 transform transition-transform duration-300 md:hidden ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 right-0 h-full w-64 bg-white z-50 transform transition-transform duration-300 md:hidden shadow-xl ${
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
-            <img src="/src/assets/logo-away.png" alt="SIKELOR Logo" className="h-10 object-contain" />
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
-            >
+            <img src="/src/assets/logo-away.png" alt="SIKELOR Logo" className="h-8 object-contain" />
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -137,7 +134,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                   e.preventDefault()
                   handleNavigation("home")
                 }}
-                className="block text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors"
+                className="block text-gray-700 text-lg font-medium py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Home
               </a>
@@ -149,7 +146,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                   e.preventDefault()
                   handleNavigation("event")
                 }}
-                className="block text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors"
+                className="block text-gray-700 text-lg font-medium py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Event
               </a>
@@ -161,7 +158,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                   e.preventDefault()
                   handleNavigation("articles")
                 }}
-                className="block text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors"
+                className="block text-gray-700 text-lg font-medium py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Artikel
               </a>
@@ -173,9 +170,14 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
                   e.preventDefault()
                   handleNavigation("collections")
                 }}
-                className="block text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors"
+                className="block text-gray-700 text-lg font-medium py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Collections
+              </a>
+            </li>
+            <li>
+              <a href="#" className="block text-green-600 text-lg font-semibold py-3 px-4 rounded-lg bg-green-50">
+                About
               </a>
             </li>
           </ul>

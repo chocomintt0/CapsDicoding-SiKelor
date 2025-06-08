@@ -169,7 +169,13 @@ export default function Articles({ onNavigate }) {
               <div className="space-y-0">
                 {articles.map((article, index) => (
                   <div key={article.id}>
-                    <ArticleCard image={article.image} title={article.title} description={article.description} />
+                    <ArticleCard
+                      image={article.image}
+                      title={article.title}
+                      description={article.description}
+                      articleId={article.id}
+                      onNavigate={onNavigate}
+                    />
                     {index < articles.length - 1 && <hr className="border-gray-300" />}
                   </div>
                 ))}

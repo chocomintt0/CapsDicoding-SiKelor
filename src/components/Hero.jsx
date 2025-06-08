@@ -1,43 +1,85 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { startViewTransition } from "../utils/transitions"
 
 export default function Hero({ onNavigate }) {
-  const handleNavigation = (page) => {
+  const [offsetY, setOffsetY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setOffsetY(window.scrollY)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const handleNavigate = (page) => {
     startViewTransition(() => {
       onNavigate(page)
     })
   }
 
+  const handleScrollToAbout = () => {
+    const aboutSection = document.getElementById("about-section")
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
   return (
     <section
-      className="w-full h-screen flex items-center px-4 md:px-8"
+      className="relative z-10 w-full h-[700px] flex items-center px-8 overflow-hidden"
       style={{
         backgroundImage: "url('/src/assets/bg-hero.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        backgroundSize: "110%",
+        backgroundPosition: `center`,
       }}
     >
-      <div className="w-full max-w-5xl mx-auto text-white flex flex-col items-start">
-        <h2 className="font-700 text-[24px] md:text-[35px] leading-tight mb-4 md:mb-6 mt-[100px] md:mt-[150px]">
-          Scan, Recognize, Learn the Cultural <br className="hidden md:block" />
-          <span className="md:hidden">Wealth of Central Sulawesi</span>
-          <span className="hidden md:inline">Wealth of Central Sulawesi</span>
+      {/* Overlay kabut */}
+      <div className="absolute inset-0 bg-black/20 z-0" />
+
+      {/* Konten */}
+      <div className="w-full max-w-5xl mx-auto text-white flex flex-col items-start z-10">
+        <h2
+          className="font-bold text-[35px] leading-tight mb-6"
+          style={{
+            transform: `translateY(${offsetY * 0.2}px)`,
+            transition: "transform 0.2s ease-out",
+          }}
+        >
+          Scan, Recognize, Learn the Cultural <br />
+          Wealth of Central Sulawesi
         </h2>
-        <p className="max-w-xl mb-[50px] md:mb-[70px] mt-[15px] md:mt-[20px] text-sm md:text-base text-white/90 leading-relaxed">
+        <p
+          className="max-w-xl mb-[70px] mt-[20px] text-base text-white/90"
+          style={{
+            transform: `translateY(${offsetY * 0.1}px)`,
+            transition: "transform 0.2s ease-out",
+            opacity: 1 - offsetY / 600,
+          }}
+        >
           Through an innovative digital approach, we invite you to explore the rich cultural heritage of Central
-          Sulawesi—from traditional dances and regional music to meaningful historical legacies. By scanning codes or
-          navigating this platform, you not only recognize the uniqueness of local culture but also contribute to its
-          preservation for future generations.
+          Sulawesi—from traditional dances and regional music to meaningful historical legacies...
         </p>
-        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-auto">
+        <div
+          className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8"
+          style={{
+            transform: `translateY(${offsetY * 0.05}px)`,
+            transition: "transform 0.2s ease-out",
+          }}
+        >
           <button
-            className="font-700 tracking-wider px-8 md:px-16 py-[12px] md:py-[15px] rounded-[30px] border bg-transparent border-white text-white hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 w-full sm:w-auto"
-            onClick={() => handleNavigation("scan")}
+            onClick={() => handleNavigate("scan")}
+            className="font-bold tracking-wider px-16 py-[15px] rounded-[30px] border bg-transparent border-white text-white hover:bg-white hover:text-black transition w-full sm:w-auto"
           >
             Scan
           </button>
-          <button className="font-700 tracking-wider px-8 md:px-16 py-[12px] md:py-[15px] rounded-[30px] bg-white text-green-800 hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
+          <button
+            onClick={handleScrollToAbout}
+            className="font-bold tracking-wider px-16 py-[15px] rounded-[30px] bg-white text-green-800 hover:bg-transparent hover:text-white hover:border hover:border-white transition w-full sm:w-auto"
+          >
             About
           </button>
         </div>

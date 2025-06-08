@@ -35,7 +35,8 @@ export default function ArticleSearch({ onSearch, onSort, onCategoryChange, cate
         </div>
         <input
           type="text"
-          className="w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+          className="w-full p-3 pl-10 text-sm bg-transparent text-gray-900 border rounded-lg focus:outline-none focus:border-green-800 focus:ring-1 focus:ring-green-800
+  focus:bg-green-150"
           placeholder="Search articles..."
           value={searchTerm}
           onChange={handleSearch}

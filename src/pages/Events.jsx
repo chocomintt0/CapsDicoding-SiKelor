@@ -168,6 +168,8 @@ export default function Events({ onNavigate }) {
                       description={event.description}
                       eventDate={event.eventDate}
                       eventTime={event.eventTime}
+                      eventId={event.id}
+                      onNavigate={onNavigate}
                     />
                     {index < events.length - 1 && <hr className="border-gray-300" />}
                   </div>

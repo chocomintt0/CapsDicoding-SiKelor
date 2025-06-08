@@ -64,7 +64,26 @@ export default function EventNavbar({ onNavigate }) {
             </a>
           </li>
           <li>
-            <a href="#" className="hover:text-green-600 transition-colors duration-200">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNavigation("collections")
+              }}
+              className="hover:text-green-600 transition-colors duration-200"
+            >
+              Collections
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNavigation("about")
+              }}
+              className="hover:text-green-600 transition-colors duration-200"
+            >
               About
             </a>
           </li>
@@ -140,6 +159,22 @@ export default function EventNavbar({ onNavigate }) {
             <li>
               <a
                 href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleNavigation("collections")
+                }}
+                className="block text-gray-700 text-lg font-medium py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                Collections
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleNavigation("about")
+                }}
                 className="block text-gray-700 text-lg font-medium py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 About
