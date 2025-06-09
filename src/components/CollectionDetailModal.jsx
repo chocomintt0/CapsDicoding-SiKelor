@@ -14,7 +14,7 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
         period: "Abad 15-17 M",
         origin: "Kerajaan Kaili",
         material: "Besi, Kayu, Emas",
-        dimensions: "Panjang: 45 cm, Lebar: 3 cm",
+        dimensions: "P: 45 cm | L: 3 cm",
         condition: "Baik",
         acquisitionDate: "1985",
         image: "/src/assets/bg-hero.png",
@@ -30,7 +30,7 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
         period: "Abad 16-18 M",
         origin: "Suku Kaili",
         material: "Kayu, Cat Alami",
-        dimensions: "Tinggi: 25 cm, Lebar: 20 cm",
+        dimensions: "T: 25 cm | L: 20 cm",
         condition: "Baik",
         acquisitionDate: "1987",
         image: "/src/assets/bg-hero.png",
@@ -46,7 +46,7 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
         period: "Abad 17-19 M",
         origin: "Donggala",
         material: "Benang Kapas, Pewarna Alam",
-        dimensions: "Panjang: 200 cm, Lebar: 100 cm",
+        dimensions: "P: 200 cm | L: 100 cm",
         condition: "Baik",
         acquisitionDate: "1990",
         image: "/src/assets/bg-hero.png",
@@ -62,7 +62,7 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
         period: "Abad 14-16 M",
         origin: "Sulawesi Tengah",
         material: "Perunggu",
-        dimensions: "Diameter: 60 cm, Tebal: 5 cm",
+        dimensions: "r: 30 cm | T: 5 cm",
         condition: "Baik",
         acquisitionDate: "1988",
         image: "/src/assets/bg-hero.png",
@@ -124,7 +124,7 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">Detail Koleksi</h2>
-          <button onClick={onClose} className="text-gray-500 bg-transparent hover:text-gray-700 transition-colors">
+          <button onClick={onClose} className="bg-transparent text-gray-500 hover:text-gray-700 transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -157,26 +157,26 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
           {/* Specifications */}
           <div className="mb-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-3">Spesifikasi</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex justify-between">
-                <span className="text-gray-600">Asal:</span>
-                <span className="text-gray-800 font-medium">{collection.origin}</span>
+                <span className="text-gray-800">Asal:</span>
+                <span className="text-gray-600 font-medium">{collection.origin}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Material:</span>
-                <span className="text-gray-800 font-medium">{collection.material}</span>
+                <span className="text-gray-800">Material:</span>
+                <span className="text-gray-600 font-medium">{collection.material}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Dimensi:</span>
-                <span className="text-gray-800 font-medium">{collection.dimensions}</span>
+                <span className="text-gray-800">Dimensi:</span>
+                <span className="text-gray-600 font-medium">{collection.dimensions}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Kondisi:</span>
-                <span className="text-gray-800 font-medium">{collection.condition}</span>
+                <span className="text-gray-800">Kondisi:</span>
+                <span className="text-gray-600 font-medium">{collection.condition}</span>
               </div>
-              <div className="flex justify-between md:col-span-2">
-                <span className="text-gray-600">Tahun Akuisisi:</span>
-                <span className="text-gray-800 font-medium">{collection.acquisitionDate}</span>
+              <div className="flex justify-between">
+                <span className="text-gray-800">Tahun Akuisisi:</span>
+                <span className="text-gray-600 font-medium">{collection.acquisitionDate}</span>
               </div>
             </div>
           </div>
@@ -191,11 +191,11 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
           <div className="flex gap-3">
             <button
               onClick={handleScanWithAR}
-              className="flex-1 bg-[#475F45] hover:bg-[#3a4e39] text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+              className="flex-1 bg- hover:bg-[#3a4e39] text-white font-semibold py-2 px-4 rounded-lg transition-colors"
             >
               Scan dengan AR
             </button>
-            <button className="flex-1 border border-[#475F45] text-[#475F45] hover:bg-[#475F45] hover:text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+            <button className="flex-1 border border-[#475F45] text-white hover:bg-[#475F45] hover:text-white font-semibold py-2 px-4 rounded-lg transition-colors">
               Download Info
             </button>
           </div>

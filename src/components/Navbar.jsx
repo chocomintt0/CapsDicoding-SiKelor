@@ -31,14 +31,14 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
   return (
     <>
       <nav
-        className={`fixed w-full z-50 flex items-center justify-between px-4 md:px-[40px] py-3 md:py-5 transition-all duration-300 ${
-          isScrolled ? "bg-black/20 backdrop-blur-md border-b border-white/20 top-0" : "bg-transparent my-2 md:my-4"
-        } h-[70px] md:h-[80px]`}
+        className={`fixed w-full z-20 flex items-center justify-between sm:px-10 py-4 h-[90px] transition-all duration-300 ${
+          isScrolled ? "bg-black/40 backdrop-blur-sm" : "bg-transparent"
+        }`}
       >
         <img src="/src/assets/logo-home.png" alt="SIKELOR Logo" className="h-[80px] md:h-[105px] object-contain" />
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex space-x-8 font-semibold text-white gap-6">
+        <ul className="hidden md:flex space-x-8 font-semibold text-white gap-3">
           <li>
             <a
               href="#"

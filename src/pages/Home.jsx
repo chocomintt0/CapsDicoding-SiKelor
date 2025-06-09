@@ -64,8 +64,12 @@ function Home({ onNavigate }) {
         <div className="absolute inset-0 bg-black/20 z-0" />
 
         {/* Contact Section */}
-        <div className="relative z-10">
+        <div className="relative z-10 backdrop-blur-sm">
           <Contact />
+          {/* Footer */}
+          <footer className="bg-transparent text-white text-center py-4 mt-auto">
+            <p className="text-xs lg:text-sm">© 2025 Sikelor. All rights reserved.</p>
+          </footer>
         </div>
       </div>
     </div>

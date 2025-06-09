@@ -8,14 +8,14 @@ const GalleryCard = ({ image, title, description, onNavigate, itemId, onShowDeta
   }
 
   // Fungsi untuk memotong teks dan menambahkan "..."
-  const truncateText = (text, maxLength = 70) => {
+  const truncateText = (text, maxLength = 67) => {
     if (text.length <= maxLength) return text
-    return text.substring(0, maxLength).trim() + "..."
+    return text.substring(0, maxLength).trim() + ". . ."
   }
 
   return (
     <div className="relative py-1 px-1">
-      <div className="relative w-[280px] h-[330px] overflow-hidden rounded-md transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+      <div className="relative w-[290px] h-[340px] overflow-hidden rounded-md transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
         {/* Gambar latar */}
         <img
           src={image || "/placeholder.svg"}
@@ -32,7 +32,7 @@ const GalleryCard = ({ image, title, description, onNavigate, itemId, onShowDeta
           <div className="mt-auto">
             <button
               onClick={handleLearnMore}
-              className="text-white/65 text-xs font-bold no-underline block relative w-[80%] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full bg-transparent border-none cursor-pointer"
+              className="text-white/65 text-xs font-bold no-underline block relative w-[70%] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full bg-transparent border-none cursor-pointer"
             >
               Learn More
             </button>
