@@ -29,12 +29,9 @@ export default function Hero({ onNavigate }) {
 
   return (
     <section
-      className="relative z-10 w-full h-[700px] flex items-center px-8 overflow-hidden"
+      className="relative z-10 w-full h-[700px] flex items-center px-8 overflow-hidden bg-fixed bg-center bg-cover bg-no-repeat"
       style={{
-        backgroundImage: "url('/src/assets/bg-hero.png')",
-        backgroundAttachment: "fixed",
-        backgroundSize: "110%",
-        backgroundPosition: `center`,
+        backgroundImage: "url('/bg-hero.png')"
       }}
     >
       {/* Overlay kabut */}

@@ -44,9 +44,7 @@ export default function ArticlePreview({ onViewAllArticles }) {
   return (
     <section
       ref={sectionRef}
-      className={`bg-white py-16 px-6 transition-all duration-700 ease-in-out transform ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+      className="bg-gradient-to-t from-[#ffffffd7] to-[#ffffff] py-16 px-6 transition-all"
     >
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
@@ -60,7 +58,7 @@ export default function ArticlePreview({ onViewAllArticles }) {
           {articles.map((article) => (
             <div
               key={article.id}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer flex flex-col min-h-[370px]"
               onClick={() => onViewAllArticles("article-detail", article.id)}
             >
               <div className="relative">
@@ -73,10 +71,12 @@ export default function ArticlePreview({ onViewAllArticles }) {
                   <span className="bg-[#475F45] text-white text-xs px-2 py-1 rounded-full">{article.category}</span>
                 </div>
               </div>
-              <div className="p-5">
-                <h3 className="text-gray-800 text-lg font-semibold mb-2">{article.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{article.description}</p>
-                <div className="flex justify-between items-center">
+              <div className="p-5 flex flex-col justify-between flex-grow">
+                <div>
+                  <h3 className="text-gray-800 text-lg font-semibold mb-2">{article.title}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{article.description}</p>
+                </div>
+                <div className="flex justify-between items-center mt-auto pt-4">
                   <span className="text-xs text-gray-500">
                     {new Date(article.publishedAt).toLocaleDateString("id-ID", {
                       year: "numeric",
@@ -89,7 +89,7 @@ export default function ArticlePreview({ onViewAllArticles }) {
                       e.stopPropagation()
                       onViewAllArticles("article-detail", article.id)
                     }}
-                    className="text-[#475F45] hover:text-[#3a4e39] text-sm font-medium"
+                    className="bg-transparent text-[#475F45] hover:text-[#3a4e39] text-sm font-medium"
                   >
                     Read More
                   </button>
