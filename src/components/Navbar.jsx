@@ -92,7 +92,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
         {/* Mobile Menu Button */}
         <button
           onClick={toggleMobileMenu}
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="md:hidden bg-transparent"
           aria-label="Toggle mobile menu"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export default function Navbar({ onNavigate, currentPage = "home" }) {
             )}
           </svg>
         </button>
-      </nav>
+      </nav> 
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (

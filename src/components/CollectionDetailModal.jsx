@@ -124,7 +124,7 @@ export default function CollectionDetailModal({ isOpen, onClose, collectionId, o
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">Detail Koleksi</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
+          <button onClick={onClose} className="text-gray-500 bg-transparent hover:text-gray-700 transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
