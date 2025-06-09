@@ -202,7 +202,7 @@ export default function Articles({ onNavigate }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#394a37] text-white text-center py-4 mt-auto">
+      <footer className="bg-[#ffffff] text-black text-center py-4 mt-auto">
         <p className="text-xs lg:text-sm">© 2025 Sikelor. All rights reserved.</p>
       </footer>
     </div>

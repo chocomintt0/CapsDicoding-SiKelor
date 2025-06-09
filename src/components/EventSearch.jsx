@@ -41,7 +41,7 @@ export default function EventSearch({ onSearch, onSort, onStatusChange }) {
         </div>
         <input
           type="text"
-          className="w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+          className="w-full p-3 pl-10 text-sm bg-transparent text-gray-900 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
           placeholder="Search events..."
           value={searchTerm}
           onChange={handleSearch}
@@ -77,7 +77,7 @@ export default function EventSearch({ onSearch, onSort, onStatusChange }) {
           </label>
           <select
             id="sort"
-            className="text-sm border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
+            className="text-sm border bg-transparent text-black border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
             onChange={handleSort}
             defaultValue="date-asc"
           >

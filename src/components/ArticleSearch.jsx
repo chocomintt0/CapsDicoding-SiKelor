@@ -69,7 +69,7 @@ export default function ArticleSearch({ onSearch, onSort, onCategoryChange, cate
           </label>
           <select
             id="sort"
-            className="text-sm border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
+            className="text-sm bg-transparent text-black border border-gray-300 rounded-md p-2"
             onChange={handleSort}
             defaultValue="newest"
           >

@@ -212,7 +212,7 @@ export default function Collections({ onNavigate }) {
         <main className="flex-1">
           {/* Add padding-top to account for fixed navbar */}
           <div className="pt-20 md:pt-24">
-            <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
+            <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
               {/* Header */}
               <div className="text-center mb-8 md:mb-12">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-6">Collections</h1>
@@ -231,7 +231,7 @@ export default function Collections({ onNavigate }) {
                   </div>
                   <input
                     type="text"
-                    className="w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                    className="w-full p-3 pl-10 text-sm bg-transparent text-gray-900 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
                     placeholder="Cari koleksi..."
                     value={searchTerm}
                     onChange={handleSearch}
@@ -241,18 +241,18 @@ export default function Collections({ onNavigate }) {
                 {/* Filter Controls */}
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                   {/* View Mode Toggle */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <span className="text-sm text-gray-600">Tampilan:</span>
                     <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                       <button
                         onClick={() => setViewMode("grid")}
-                        className={`px-3 py-2 text-sm ${viewMode === "grid" ? "bg-[#475F45] text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+                        className={`px-4 py-2 text-sm ${viewMode === "grid" ? "bg-[#475F45] text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
                       >
                         Grid
                       </button>
                       <button
                         onClick={() => setViewMode("list")}
-                        className={`px-3 py-2 text-sm ${viewMode === "list" ? "bg-[#475F45] text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+                        className={`px- 4py-2 text-sm ${viewMode === "list" ? "bg-[#475F45] text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
                       >
                         List
                       </button>
@@ -266,7 +266,7 @@ export default function Collections({ onNavigate }) {
                     </label>
                     <select
                       id="sort"
-                      className="text-sm border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
+                      className="text-sm border bg-transparent text-black border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
                       onChange={handleSort}
                       value={sortOption}
                     >
@@ -380,7 +380,7 @@ export default function Collections({ onNavigate }) {
         </main>
 
         {/* Footer */}
-        <footer className="bg-[#394a37] text-white text-center py-4 mt-auto">
+        <footer className="bg-[#ffffff] text-black text-center py-4 mt-auto">
           <p className="text-xs lg:text-sm">© 2025 Sikelor. All rights reserved.</p>
         </footer>
       </div>

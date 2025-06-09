@@ -59,8 +59,8 @@ export default function About({ onNavigate }) {
     {
       id: "FC323D5Y0559",
       name: "Aril.S",
-      role: "Frontend Developer",
-      position: "UI/UX - Frontend Specialist",
+      role: "Fullstack Engineer",
+      position: "UI/UX Designer",
       image: "/src/assets/dev/Aril.JPG?height=300&width=300",
       bio: "Bertanggung jawab atas desain antarmuka pengguna dan pengalaman pengguna yang intuitif dan menarik.",
       social: {
@@ -87,7 +87,7 @@ export default function About({ onNavigate }) {
     {
       id: "FC323D5Y0486",
       name: "Pradigta",
-      role: "Backend Developer",
+      role: "Fullstack Developer",
       position: "Backend Specialist",
       image: "/src/assets/dev/dita.jpg?height=300&width=300",
       bio: "Mengembangkan aplikasi mobile SIKELOR untuk platform Android dan iOS dengan teknologi React Native.",
@@ -101,8 +101,8 @@ export default function About({ onNavigate }) {
     {
       id: "FC323D5Y1747",
       name: "Andi Albukhari Fachrurrozi",
-      role: "Frontend Developer",
-      position: "Frontend Specialist",
+      role: "Fullstack Developer",
+      position: "Frontend Engineer",
       image: "/src/assets/dev/oci.jpg?height=300&width=300",
       bio: "Mengelola infrastruktur cloud, deployment, dan monitoring sistem untuk memastikan aplikasi berjalan optimal.",
       social: {
@@ -134,7 +134,7 @@ export default function About({ onNavigate }) {
               <img
                 src="/src/assets/museum.png"
                 alt="Museum Sulawesi Tengah"
-                className="w-full h-[450px] object-cover rounded-lg shadow-lg border-black"
+                className="w-full h-[450px] object-cover rounded-lg shadow-lg"
               />
             </div>
 
@@ -210,7 +210,7 @@ export default function About({ onNavigate }) {
 
                     {/* Position Badge */}
                     <div className="text-center mb-2">
-                      <span className="inline-block bg-[#475F45] text-white text-xs px-1.5 py-0.5 rounded-full leading-tight">
+                      <span className="inline-block bg-[#475F45] text-white text-xs py-1 px-2 rounded-full leading-tight">
                         {member.position}
                       </span>
                     </div>

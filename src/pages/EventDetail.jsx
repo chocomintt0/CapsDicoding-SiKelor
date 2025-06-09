@@ -59,7 +59,7 @@ export default function EventDetail({ onNavigate, eventId }) {
           {/* Back Button */}
           <button
             onClick={() => onNavigate("event")}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6 transition-colors"
+            className="flex items-center gap-2 bg-transparent pl-0 text-gray-600 hover:text-gray-800 mb-6 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -87,20 +87,8 @@ export default function EventDetail({ onNavigate, eventId }) {
                 {/* Quick Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="w-5 h-5" />
-                    <span>{event.eventDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
                     <Clock className="w-5 h-5" />
                     <span>{event.eventTime}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="w-5 h-5" />
-                    <span>{event.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Users className="w-5 h-5" />
-                    <span>{event.capacity}</span>
                   </div>
                 </div>
               </div>
@@ -141,21 +129,6 @@ export default function EventDetail({ onNavigate, eventId }) {
                       <div className="text-[#475F45] font-semibold min-w-[120px]">{item.time}</div>
                       <div className="text-gray-700">{item.activity}</div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Gallery */}
-              <div>
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Galeri</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {event.gallery.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image || "/placeholder.svg"}
-                      alt={`Gallery ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg hover:scale-105 transition-transform cursor-pointer"
-                    />
                   ))}
                 </div>
               </div>
@@ -226,7 +199,7 @@ export default function EventDetail({ onNavigate, eventId }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#394a37] text-white text-center py-4 mt-auto">
+      <footer className="bg-[#ffffff] text-black text-center py-4 mt-auto">
         <p className="text-xs lg:text-sm">© 2025 Sikelor. All rights reserved.</p>
       </footer>
     </div>

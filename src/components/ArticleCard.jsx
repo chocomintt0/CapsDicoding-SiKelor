@@ -30,7 +30,7 @@ export default function ArticleCard({ image, title, description, articleId, onNa
         <p className="text-gray-600 mb-4 leading-relaxed text-sm md:text-base">{description}</p>
         <button
           onClick={handleReadMore}
-          className="text-gray-400 hover:text-green-600 transition-colors font-medium text-sm md:text-base"
+          className="bg-transparent text-black/60 hover:text-green-600 p-0 mt-5 transition-colors font-medium text-sm md:text-base"
         >
           Read More
         </button>

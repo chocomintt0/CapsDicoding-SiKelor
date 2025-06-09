@@ -92,7 +92,7 @@ export default function CollectionNavbar({ onNavigate }) {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-gray-700"
+          className="md:hidden text-gray-700 bg-transparent"
           aria-label="Toggle mobile menu"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@ export default function CollectionNavbar({ onNavigate }) {
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <img src="/src/assets/logo-away.png" alt="SIKELOR Logo" className="h-8 object-contain" />
-            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700">
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 bg-transparent">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
