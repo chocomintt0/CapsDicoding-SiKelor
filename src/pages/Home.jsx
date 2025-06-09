@@ -30,7 +30,7 @@ function Home({ onNavigate }) {
         style={{
           backgroundImage: "url('/src/assets/bg-hero.png')",
           backgroundAttachment: "fixed",
-          backgroundSize: "cover",
+          backgroundSize: "110%",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
