@@ -1,6 +1,7 @@
 "use client"
 import AboutNavbar from "../components/AboutNavbar"
 
+
 export default function About({ onNavigate }) {
   const museumInfo = {
     title: "Museum Sulawesi Tengah",
@@ -131,9 +132,9 @@ export default function About({ onNavigate }) {
             {/* Museum Image */}
             <div className="mb-16">
               <img
-                src="/src/assets/bg-hero.png?height=400&width=800"
+                src="/src/assets/museum.png"
                 alt="Museum Sulawesi Tengah"
-                className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
+                className="w-full h-[450px] object-cover rounded-lg shadow-lg border-black"
               />
             </div>
 
@@ -168,16 +169,6 @@ export default function About({ onNavigate }) {
                   </ul>
                 </div>
               </div>
-            </div>
-
-            {/* Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-              {museumInfo.stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-[#475F45] mb-2">{stat.number}</div>
-                  <div className="text-gray-600 text-sm md:text-base">{stat.label}</div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -286,7 +277,7 @@ export default function About({ onNavigate }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#394a37] text-white text-center py-4 mt-auto">
+      <footer className="bg-[#ffffff] text-black text-center py-4 mt-auto">
         <p className="text-xs lg:text-sm">© 2025 Sikelor. All rights reserved.</p>
       </footer>
     </div>
