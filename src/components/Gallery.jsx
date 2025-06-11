@@ -3,47 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import GalleryCard from "./GalleryCard"
 import CollectionDetailModal from "./CollectionDetailModal"
-
-const collectionData = [
-  {
-    id: 1,
-    image: "/src/assets/bg-hero.png",
-    title: "Keris Tradisional",
-    description: "Koleksi keris tradisional dari berbagai daerah di Sulawesi Tengah dengan ukiran dan motif yang unik.",
-  },
-  {
-    id: 2,
-    image: "/src/assets/bg-hero.png",
-    title: "Topeng Kaili",
-    description: "Topeng tradisional yang digunakan dalam upacara adat dan ritual keagamaan suku Kaili.",
-  },
-  {
-    id: 3,
-    image: "/src/assets/bg-hero.png",
-    title: "Kain Tenun Donggala",
-    description: "Kain tenun dengan motif khas Donggala yang dibuat menggunakan teknik tradisional turun temurun.",
-  },
-  {
-    id: 4,
-    image: "/src/assets/bg-hero.png",
-    title: "Alat Musik Gong",
-    description: "Gong perunggu yang digunakan dalam berbagai upacara adat dan pertunjukan musik tradisional.",
-  },
-  {
-    id: 5,
-    image: "/src/assets/bg-hero.png",
-    title: "Perhiasan Emas Antik",
-    description:
-      "Koleksi perhiasan emas antik dengan desain dan teknik pembuatan yang mencerminkan kemahiran pengrajin masa lalu.",
-  },
-  {
-    id: 6,
-    image: "/src/assets/bg-hero.png",
-    title: "Fosil Purba",
-    description:
-      "Temuan fosil dari era prasejarah yang memberikan wawasan tentang kehidupan masa lampau di Sulawesi Tengah.",
-  },
-]
+import { collectionsData } from "../data/collections"
 
 const Gallery = ({ onNavigate }) => {
   const titleRef = useRef(null)
@@ -52,6 +12,9 @@ const Gallery = ({ onNavigate }) => {
   const [buttonVisible, setButtonVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCollectionId, setSelectedCollectionId] = useState(null)
+
+  // Ambil 6 koleksi pertama untuk gallery
+  const galleryCollections = collectionsData.slice(0, 6)
 
   useEffect(() => {
     const observerTitle = new IntersectionObserver(([entry]) => setTitleVisible(entry.isIntersecting), {
@@ -105,12 +68,12 @@ const Gallery = ({ onNavigate }) => {
 
         {/* Gallery Grid */}
         <div className="flex flex-wrap justify-center gap-6 mb-10">
-          {collectionData.map((item) => (
+          {galleryCollections.map((item) => (
             <GalleryCard
               key={item.id}
-              image={item.image}
-              title={item.title}
-              description={item.description}
+              image={item.gambar}
+              title={item.nama}
+              description={item.deskripsi}
               onNavigate={onNavigate}
               itemId={item.id}
               onShowDetail={handleShowDetail}

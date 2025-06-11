@@ -4,128 +4,12 @@ import { useState, useEffect } from "react"
 import CollectionNavbar from "../components/CollectionNavbar"
 import CollectionDetailModal from "../components/CollectionDetailModal"
 import { Search } from "../components/icons"
+import { collectionsData, getUniqueCategories, searchCollections, formatDimensions } from "../data/collections"
 
 export default function Collections({ onNavigate }) {
-  const allCollections = [
-    {
-      id: 1,
-      title: "Keris Tradisional",
-      category: "Senjata Tradisional",
-      period: "Abad 15-17 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description:
-        "Koleksi keris tradisional dari berbagai daerah di Sulawesi Tengah dengan ukiran dan motif yang unik.",
-    },
-    {
-      id: 2,
-      title: "Topeng Kaili",
-      category: "Seni Tradisional",
-      period: "Abad 16-18 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Topeng tradisional yang digunakan dalam upacara adat dan ritual keagamaan suku Kaili.",
-    },
-    {
-      id: 3,
-      title: "Kain Tenun Donggala",
-      category: "Tekstil",
-      period: "Abad 17-19 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Kain tenun dengan motif khas Donggala yang dibuat menggunakan teknik tradisional turun temurun.",
-    },
-    {
-      id: 4,
-      title: "Alat Musik Gong",
-      category: "Instrumen Musik",
-      period: "Abad 14-16 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Gong perunggu yang digunakan dalam berbagai upacara adat dan pertunjukan musik tradisional.",
-    },
-    {
-      id: 5,
-      title: "Perhiasan Emas Antik",
-      category: "Perhiasan",
-      period: "Abad 13-15 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description:
-        "Koleksi perhiasan emas antik dengan desain dan teknik pembuatan yang mencerminkan kemahiran pengrajin masa lalu.",
-    },
-    {
-      id: 6,
-      title: "Tembikar Kuno",
-      category: "Keramik",
-      period: "Abad 12-14 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Koleksi tembikar dan keramik kuno yang menunjukkan perkembangan teknologi dan seni pada masanya.",
-    },
-    {
-      id: 7,
-      title: "Mata Uang Kuno",
-      category: "Numismatik",
-      period: "Abad 15-19 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Koleksi mata uang kuno yang pernah beredar di wilayah Sulawesi Tengah dari berbagai era.",
-    },
-    {
-      id: 8,
-      title: "Fosil Purba",
-      category: "Geologi",
-      period: "Era Mesozoikum",
-      image: "/placeholder.svg?height=300&width=400",
-      description:
-        "Temuan fosil dari era prasejarah yang memberikan wawasan tentang kehidupan masa lampau di Sulawesi Tengah.",
-    },
-    {
-      id: 9,
-      title: "Naskah Kuno",
-      category: "Filologi",
-      period: "Abad 16-18 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description:
-        "Koleksi naskah dan manuskrip kuno yang berisi catatan sejarah, sastra, dan pengetahuan tradisional.",
-    },
-    {
-      id: 10,
-      title: "Peralatan Rumah Tangga",
-      category: "Etnografi",
-      period: "Abad 18-20 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description:
-        "Berbagai peralatan rumah tangga tradisional yang menggambarkan kehidupan sehari-hari masyarakat Sulawesi Tengah.",
-    },
-    {
-      id: 11,
-      title: "Patung Megalitik",
-      category: "Arkeologi",
-      period: "Abad 13-15 M",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Replika patung megalitik dari Lembah Bada yang menjadi ikon arkeologi Sulawesi Tengah.",
-    },
-    {
-      id: 12,
-      title: "Koleksi Flora Kering",
-      category: "Flora & Fauna",
-      period: "Modern",
-      image: "/placeholder.svg?height=300&width=400",
-      description: "Koleksi spesimen flora kering yang menunjukkan keanekaragaman hayati Sulawesi Tengah.",
-    },
-  ]
+  const categories = getUniqueCategories()
 
-  const categories = [
-    "Senjata Tradisional",
-    "Seni Tradisional",
-    "Tekstil",
-    "Instrumen Musik",
-    "Perhiasan",
-    "Keramik",
-    "Numismatik",
-    "Geologi",
-    "Filologi",
-    "Etnografi",
-    "Arkeologi",
-    "Flora & Fauna",
-  ]
-
-  const [collections, setCollections] = useState(allCollections)
+  const [collections, setCollections] = useState(collectionsData)
   const [searchTerm, setSearchTerm] = useState("")
   const [sortOption, setSortOption] = useState("name-asc")
   const [activeCategories, setActiveCategories] = useState([])
@@ -134,36 +18,31 @@ export default function Collections({ onNavigate }) {
   const [selectedCollectionId, setSelectedCollectionId] = useState(null)
 
   useEffect(() => {
-    let filteredCollections = [...allCollections]
+    let filteredCollections = [...collectionsData]
 
     // Search filter
     if (searchTerm) {
-      filteredCollections = filteredCollections.filter(
-        (collection) =>
-          collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          collection.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          collection.category.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+      filteredCollections = searchCollections(searchTerm)
     }
 
     // Category filter
     if (activeCategories.length > 0) {
-      filteredCollections = filteredCollections.filter((collection) => activeCategories.includes(collection.category))
+      filteredCollections = filteredCollections.filter((collection) => activeCategories.includes(collection.kategori))
     }
 
     // Sort
     switch (sortOption) {
       case "name-asc":
-        filteredCollections.sort((a, b) => a.title.localeCompare(b.title))
+        filteredCollections.sort((a, b) => a.nama.localeCompare(b.nama))
         break
       case "name-desc":
-        filteredCollections.sort((a, b) => b.title.localeCompare(a.title))
+        filteredCollections.sort((a, b) => b.nama.localeCompare(a.nama))
         break
       case "category":
-        filteredCollections.sort((a, b) => a.category.localeCompare(b.category))
+        filteredCollections.sort((a, b) => a.kategori.localeCompare(b.kategori))
         break
-      case "period":
-        filteredCollections.sort((a, b) => a.period.localeCompare(b.period))
+      case "year":
+        filteredCollections.sort((a, b) => b.spesifikasi.tahun_akuisisi - a.spesifikasi.tahun_akuisisi)
         break
       default:
         break
@@ -212,7 +91,7 @@ export default function Collections({ onNavigate }) {
         <main className="flex-1">
           {/* Add padding-top to account for fixed navbar */}
           <div className="pt-20 md:pt-24">
-            <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
+            <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
               {/* Header */}
               <div className="text-center mb-8 md:mb-12">
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-6">Collections</h1>
@@ -252,7 +131,7 @@ export default function Collections({ onNavigate }) {
                       </button>
                       <button
                         onClick={() => setViewMode("list")}
-                        className={`px- 4py-2 text-sm ${viewMode === "list" ? "bg-[#475F45] text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+                        className={`px-4 py-2 text-sm ${viewMode === "list" ? "bg-[#475F45] text-white" : "bg-white text-gray-700 hover:bg-gray-50"}`}
                       >
                         List
                       </button>
@@ -273,7 +152,7 @@ export default function Collections({ onNavigate }) {
                       <option value="name-asc">Nama A-Z</option>
                       <option value="name-desc">Nama Z-A</option>
                       <option value="category">Kategori</option>
-                      <option value="period">Periode</option>
+                      <option value="year">Tahun Akuisisi</option>
                     </select>
                   </div>
                 </div>
@@ -286,11 +165,10 @@ export default function Collections({ onNavigate }) {
                       <button
                         key={category}
                         onClick={() => handleCategoryToggle(category)}
-                        className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                          activeCategories.includes(category)
+                        className={`px-3 py-1 text-sm rounded-full transition-colors ${activeCategories.includes(category)
                             ? "bg-[#475F45] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
                         {category}
                       </button>
@@ -320,47 +198,58 @@ export default function Collections({ onNavigate }) {
               {/* Results Count */}
               <div className="mb-6">
                 <p className="text-gray-600 text-sm">
-                  Menampilkan {collections.length} dari {allCollections.length} koleksi
+                  Menampilkan {collections.length} dari {collectionsData.length} koleksi
                 </p>
               </div>
 
               {/* Collections Grid/List */}
               {collections.length > 0 ? (
                 <div
-                  className={
-                    viewMode === "grid"
-                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                      : "space-y-4"
-                  }
+                  className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}
                 >
                   {collections.map((collection) => (
                     <div
                       key={collection.id}
-                      className={`bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all cursor-pointer ${
-                        viewMode === "list" ? "flex gap-4 p-4" : ""
-                      }`}
+                      className={`bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all cursor-pointer ${viewMode === "list" ? "flex gap-4 p-4" : ""
+                        }`}
                       onClick={() => handleShowDetail(collection.id)}
                     >
                       <img
-                        src={collection.image || "/placeholder.svg"}
-                        alt={collection.title}
+                        src={collection.gambar || "/placeholder.svg"}
+                        alt={collection.nama}
                         className={
                           viewMode === "list"
                             ? "w-32 h-24 object-cover rounded flex-shrink-0"
                             : "w-full h-48 object-cover"
                         }
+                        onError={(e) => {
+                          e.target.src = "/placeholder.svg?height=300&width=400"
+                        }}
                       />
                       <div className={viewMode === "list" ? "flex-1" : "p-4"}>
                         <div className="flex items-center gap-2 mb-2">
                           <span className="bg-[#475F45] text-white text-xs px-2 py-1 rounded-full">
-                            {collection.category}
+                            {collection.kategori}
                           </span>
-                          <span className="text-xs text-gray-500">{collection.period}</span>
+                          <span className="text-xs text-gray-500">{collection.spesifikasi.tahun_akuisisi}</span>
                         </div>
-                        <h3 className="text-gray-800 text-lg font-semibold mb-2">{collection.title}</h3>
+                        <h3 className="text-gray-800 text-lg font-semibold mb-2">{collection.nama}</h3>
                         <p className={`text-gray-600 text-sm ${viewMode === "list" ? "" : "line-clamp-3"}`}>
-                          {collection.description}
+                          {collection.deskripsi}
                         </p>
+                        {viewMode === "list" && (
+                          <div className="mt-2 text-xs text-gray-500">
+                            <p>
+                              <strong>Asal:</strong> {collection.spesifikasi.asal}
+                            </p>
+                            <p>
+                              <strong>Material:</strong> {collection.spesifikasi.material}
+                            </p>
+                            <p>
+                              <strong>Dimensi:</strong> {formatDimensions(collection.spesifikasi.dimensi)}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

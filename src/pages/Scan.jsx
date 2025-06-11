@@ -3,7 +3,19 @@
 import { useState, useRef, useEffect } from "react"
 import { startViewTransition } from "../utils/transitions"
 import ScanNavbar from "../components/ScanNavbar"
-import { Cube, Camera, Upload, Image, X, Target, CameraFlash, VideoCamera } from "../components/icons"
+import { MLApiService } from "../services/api"
+import {
+  Cube,
+  Camera,
+  Upload,
+  Image,
+  X,
+  Target,
+  CameraFlash,
+  VideoCamera,
+  AlertCircle,
+  CheckCircle,
+} from "../components/icons"
 
 export default function Scan({ onNavigate }) {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -13,24 +25,34 @@ export default function Scan({ onNavigate }) {
   const [isDirectScanActive, setIsDirectScanActive] = useState(false)
   const [stream, setStream] = useState(null)
   const [detectedObjects, setDetectedObjects] = useState([])
+  const [classificationResult, setClassificationResult] = useState(null)
   const [cameraError, setCameraError] = useState(null)
+  const [apiError, setApiError] = useState(null)
   const [isVideoReady, setIsVideoReady] = useState(false)
   const [isDirectVideoReady, setIsDirectVideoReady] = useState(false)
+  const [lastScanTime, setLastScanTime] = useState(0)
   const fileInputRef = useRef(null)
   const videoRef = useRef(null)
   const directScanVideoRef = useRef(null)
   const canvasRef = useRef(null)
   const directScanStreamRef = useRef(null)
+  const detectionIntervalRef = useRef(null)
 
   const handleDirectScan = async () => {
     setCameraError(null)
+    setApiError(null)
     setIsDirectVideoReady(false)
+    setDetectedObjects([])
+    setClassificationResult(null)
+
     startViewTransition(() => {
       setScanMode("direct")
       setIsDirectScanActive(true)
     })
 
     try {
+      console.log("Starting direct scan...")
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment",
@@ -39,29 +61,43 @@ export default function Scan({ onNavigate }) {
         },
       })
 
+      console.log("Media stream obtained:", mediaStream)
       directScanStreamRef.current = mediaStream
 
       if (directScanVideoRef.current) {
         directScanVideoRef.current.srcObject = mediaStream
 
+        // Event handlers untuk video
         directScanVideoRef.current.onloadedmetadata = () => {
-          console.log("Direct scan video metadata loaded")
+          console.log("Video metadata loaded")
           setIsDirectVideoReady(true)
         }
 
         directScanVideoRef.current.oncanplay = () => {
-          console.log("Direct scan video can play")
+          console.log("Video can play")
           directScanVideoRef.current.play().catch(console.error)
         }
 
+        directScanVideoRef.current.onplaying = () => {
+          console.log("Video is playing, starting detection...")
+          startRealTimeDetection()
+        }
+
+        directScanVideoRef.current.onerror = (e) => {
+          console.error("Video error:", e)
+          setCameraError("Error saat memuat video")
+        }
+
+        // Force play video
         setTimeout(() => {
           if (directScanVideoRef.current) {
-            directScanVideoRef.current.play().catch(console.error)
+            directScanVideoRef.current.play().catch((error) => {
+              console.error("Error playing video:", error)
+              setCameraError("Tidak dapat memutar video kamera")
+            })
           }
-        }, 100)
+        }, 500)
       }
-
-      startMockDetection()
     } catch (error) {
       console.error("Error accessing camera for direct scan:", error)
       setCameraError("Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.")
@@ -78,44 +114,125 @@ export default function Scan({ onNavigate }) {
         directScanStreamRef.current.getTracks().forEach((track) => track.stop())
         directScanStreamRef.current = null
       }
+      if (detectionIntervalRef.current) {
+        clearInterval(detectionIntervalRef.current)
+        detectionIntervalRef.current = null
+      }
       setIsDirectScanActive(false)
       setScanMode(null)
       setDetectedObjects([])
+      setClassificationResult(null)
       setCameraError(null)
+      setApiError(null)
       setIsDirectVideoReady(false)
     })
   }
 
-  const startMockDetection = () => {
-    const mockDetections = [
-      { id: 1, name: "Keris Tradisional", confidence: 0.89, x: 150, y: 100, width: 200, height: 150 },
-      { id: 2, name: "Topeng Kaili", confidence: 0.76, x: 400, y: 200, width: 180, height: 160 },
-    ]
+  const startRealTimeDetection = () => {
+    if (detectionIntervalRef.current) {
+      clearInterval(detectionIntervalRef.current)
+    }
 
-    setTimeout(() => {
-      setDetectedObjects(mockDetections)
-    }, 2000)
+    // Tunggu video siap sebelum memulai deteksi
+    const startDetection = () => {
+      console.log("🎯 Starting real-time detection...")
 
-    const detectionInterval = setInterval(() => {
-      if (!isDirectScanActive) {
-        clearInterval(detectionInterval)
-        return
-      }
+      detectionIntervalRef.current = setInterval(async () => {
+        if (!isDirectScanActive || !directScanVideoRef.current || !canvasRef.current) {
+          console.log("❌ Detection stopped - missing refs or inactive")
+          return
+        }
 
-      const updatedDetections = mockDetections.map((obj) => ({
-        ...obj,
-        x: obj.x + (Math.random() - 0.5) * 20,
-        y: obj.y + (Math.random() - 0.5) * 20,
-        confidence: Math.max(0.5, Math.min(0.95, obj.confidence + (Math.random() - 0.5) * 0.1)),
-      }))
+        const video = directScanVideoRef.current
+        const canvas = canvasRef.current
 
-      setDetectedObjects(updatedDetections)
-    }, 1000)
+        // Pastikan video sudah ready dan memiliki dimensi
+        if (!video.videoWidth || !video.videoHeight || video.readyState < 2) {
+          console.log(
+            "⏳ Video not ready yet, dimensions:",
+            video.videoWidth,
+            "x",
+            video.videoHeight,
+            "readyState:",
+            video.readyState,
+          )
+          return
+        }
+
+        // Throttle detection to avoid too many API calls
+        const now = Date.now()
+        if (now - lastScanTime < 3000) {
+          // Increased to 3 seconds
+          return
+        }
+
+        try {
+          console.log("📸 Capturing frame for detection...")
+
+          // Set canvas dimensions to match video
+          canvas.width = video.videoWidth
+          canvas.height = video.videoHeight
+          const ctx = canvas.getContext("2d")
+
+          // Clear canvas first
+          ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+          // Draw video frame to canvas (no mirroring for detection)
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+          // Convert canvas to blob then to file
+          canvas.toBlob(
+            async (blob) => {
+              if (!blob) {
+                console.error("❌ Failed to create blob from canvas")
+                return
+              }
+
+              try {
+                const imageFile = new File([blob], "frame.jpg", { type: "image/jpeg" })
+                console.log("🔄 Sending image for YOLO detection, size:", imageFile.size, "bytes")
+
+                // Detect objects using YOLO
+                const result = await MLApiService.detectObjects(imageFile)
+
+                console.log("✅ YOLO detection result:", result)
+
+                if (result && result.objects) {
+                  setDetectedObjects(result.objects)
+                  console.log("📊 Found", result.objects.length, "objects")
+                } else {
+                  setDetectedObjects([])
+                  console.log("📊 No objects detected")
+                }
+
+                setLastScanTime(now)
+                setApiError(null)
+              } catch (error) {
+                console.error("❌ YOLO detection error:", error)
+                setApiError(`Detection error: ${error.message}`)
+              }
+            },
+            "image/jpeg",
+            0.8,
+          )
+        } catch (error) {
+          console.error("❌ Frame capture error:", error)
+          setApiError(`Frame capture error: ${error.message}`)
+        }
+      }, 3000) // Check every 3 seconds
+    }
+
+    // Mulai deteksi setelah delay untuk memastikan video ready
+    setTimeout(startDetection, 2000)
   }
 
   const handleTakePicture = async () => {
     setCameraError(null)
+    setApiError(null)
     setIsVideoReady(false)
+    setClassificationResult(null)
+    setDetectedObjects([])
+
     startViewTransition(() => {
       setScanMode("camera")
       setIsCameraOpen(true)
@@ -135,16 +252,13 @@ export default function Scan({ onNavigate }) {
         videoRef.current.srcObject = mediaStream
 
         videoRef.current.onloadedmetadata = () => {
-          console.log("Camera video metadata loaded")
           setIsVideoReady(true)
         }
 
         videoRef.current.oncanplay = () => {
-          console.log("Camera video can play")
           videoRef.current.play().catch(console.error)
         }
 
-        // Force play for mobile
         setTimeout(() => {
           if (videoRef.current) {
             videoRef.current.play().catch(console.error)
@@ -187,11 +301,14 @@ export default function Scan({ onNavigate }) {
       }
       setIsCameraOpen(false)
       setCameraError(null)
+      setApiError(null)
       setIsVideoReady(false)
     })
   }
 
   const handleUploadImage = () => {
+    setClassificationResult(null)
+    setDetectedObjects([])
     fileInputRef.current?.click()
   }
 
@@ -209,18 +326,27 @@ export default function Scan({ onNavigate }) {
     }
   }
 
-  const handleAnalyze = () => {
-    if (selectedImage) {
-      startViewTransition(() => {
-        setIsScanning(true)
-      })
+  const handleAnalyze = async () => {
+    if (!selectedImage) return
 
-      setTimeout(() => {
-        startViewTransition(() => {
-          setIsScanning(false)
-        })
-        alert("Analisis gambar selesai! Hasil akan ditampilkan di sini.")
-      }, 3000)
+    setIsScanning(true)
+    setApiError(null)
+    setClassificationResult(null)
+
+    try {
+      // Convert data URL to File object
+      const imageFile = MLApiService.dataURLtoFile(selectedImage, "image.jpg")
+
+      // Use classification for uploaded images and captured photos
+      const result = await MLApiService.classifyImage(imageFile)
+
+      setClassificationResult(result)
+      setApiError(null)
+    } catch (error) {
+      console.error("Analysis error:", error)
+      setApiError(error.message)
+    } finally {
+      setIsScanning(false)
     }
   }
 
@@ -239,8 +365,104 @@ export default function Scan({ onNavigate }) {
       if (directScanStreamRef.current) {
         directScanStreamRef.current.getTracks().forEach((track) => track.stop())
       }
+      if (detectionIntervalRef.current) {
+        clearInterval(detectionIntervalRef.current)
+      }
     }
   }, [stream])
+
+  const renderClassificationResults = () => {
+    if (!classificationResult) return null
+
+    return (
+      <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg p-4 max-w-sm shadow-lg">
+        <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 text-green-600" />
+          Hasil Klasifikasi
+        </h3>
+
+        <div className="space-y-3">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-1">Nama Objek:</h4>
+            <div className="text-sm font-semibold text-gray-800 bg-gray-100 rounded px-3 py-2">
+              {classificationResult.class_name || classificationResult.nama || "Tidak diketahui"}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-1">Deskripsi:</h4>
+            <div className="text-xs text-gray-600 bg-gray-50 rounded px-3 py-2 leading-relaxed">
+              {classificationResult.description || classificationResult.deskripsi || "Deskripsi tidak tersedia"}
+            </div>
+          </div>
+
+          {classificationResult.confidence && (
+            <div className="text-xs text-gray-500 text-center pt-2 border-t">
+              Confidence: {(classificationResult.confidence * 100).toFixed(1)}%
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  const renderDetectionOverlay = () => {
+    if (!isDirectVideoReady || !detectedObjects.length || !directScanVideoRef.current) {
+      return null
+    }
+
+    const videoElement = directScanVideoRef.current
+    const videoRect = videoElement.getBoundingClientRect()
+
+    // Get actual video dimensions vs display dimensions
+    const videoWidth = videoElement.videoWidth
+    const videoHeight = videoElement.videoHeight
+    const displayWidth = videoRect.width
+    const displayHeight = videoRect.height
+
+    if (!videoWidth || !videoHeight) {
+      return null
+    }
+
+    // Calculate scale factors
+    const scaleX = displayWidth / videoWidth
+    const scaleY = displayHeight / videoHeight
+
+    return (
+      <div className="absolute inset-0 pointer-events-none">
+        {detectedObjects.map((obj, index) => {
+          // Get bounding box coordinates
+          const x = (obj.x || obj.bbox?.[0] || 0) * scaleX
+          const y = (obj.y || obj.bbox?.[1] || 0) * scaleY
+          const width = (obj.width || obj.bbox?.[2] || 100) * scaleX
+          const height = (obj.height || obj.bbox?.[3] || 100) * scaleY
+
+          // Ensure coordinates are within bounds
+          const boundedX = Math.max(0, Math.min(x, displayWidth - width))
+          const boundedY = Math.max(0, Math.min(y, displayHeight - height))
+          const boundedWidth = Math.min(width, displayWidth - boundedX)
+          const boundedHeight = Math.min(height, displayHeight - boundedY)
+
+          return (
+            <div
+              key={`detection-${index}`}
+              className="absolute border-2 border-green-400 bg-green-400 bg-opacity-20 rounded"
+              style={{
+                left: `${boundedX}px`,
+                top: `${boundedY}px`,
+                width: `${boundedWidth}px`,
+                height: `${boundedHeight}px`,
+              }}
+            >
+              <div className="absolute -top-8 left-0 bg-green-400 text-white px-2 py-1 rounded text-xs font-semibold whitespace-nowrap shadow-lg max-w-xs truncate">
+                {obj.name || obj.class || "Unknown"} ({((obj.confidence || obj.score || 0) * 100).toFixed(1)}%)
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   const renderCameraContent = () => {
     if (isDirectScanActive) {
@@ -252,6 +474,7 @@ export default function Scan({ onNavigate }) {
               <div className="text-center text-white">
                 <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-white mx-auto mb-4"></div>
                 <p className="text-sm md:text-lg font-semibold">Memuat kamera...</p>
+                <p className="text-xs md:text-sm text-[#d9e5d8] mt-2">Menyiapkan deteksi real-time</p>
               </div>
             </div>
           )}
@@ -264,46 +487,60 @@ export default function Scan({ onNavigate }) {
             webkit-playsinline="true"
             className={`w-full h-full object-cover ${!isDirectVideoReady ? "opacity-0" : "opacity-100"}`}
             style={{
-              transform: "scaleX(-1)",
+              transform: "scaleX(-1)", // Mirror for user experience
+            }}
+            onLoadedMetadata={() => {
+              console.log("📹 Video metadata loaded")
+              setIsDirectVideoReady(true)
+            }}
+            onCanPlay={() => {
+              console.log("📹 Video can play")
+              if (directScanVideoRef.current) {
+                directScanVideoRef.current.play().catch(console.error)
+              }
+            }}
+            onPlaying={() => {
+              console.log("📹 Video is playing, starting detection...")
+              startRealTimeDetection()
+            }}
+            onError={(e) => {
+              console.error("📹 Video error:", e)
+              setCameraError("Error saat memuat video")
             }}
           />
 
-          {/* Detection Overlay - only show when video is ready */}
-          {isDirectVideoReady && (
-            <div className="absolute inset-0 pointer-events-none">
-              {detectedObjects.map((obj) => (
-                <div
-                  key={obj.id}
-                  className="absolute border-2 border-green-400 bg-green-400 bg-opacity-20 rounded"
-                  style={{
-                    left: `${(obj.x / 1280) * 100}%`,
-                    top: `${(obj.y / 720) * 100}%`,
-                    width: `${(obj.width / 1280) * 100}%`,
-                    height: `${(obj.height / 720) * 100}%`,
-                  }}
-                >
-                  <div className="absolute -top-6 left-0 bg-green-400 text-white px-1 py-1 rounded text-xs font-semibold whitespace-nowrap">
-                    {obj.name} ({(obj.confidence * 100).toFixed(0)}%)
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* YOLO Detection Overlay */}
+          {renderDetectionOverlay()}
 
           {/* Status Indicator */}
           {isDirectVideoReady && (
             <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-black bg-opacity-70 text-white px-2 py-1 md:px-3 md:py-2 rounded-lg flex items-center gap-2">
               <Target className="w-3 h-3 md:w-4 md:h-4 text-green-400" />
-              <span className="text-xs md:text-sm font-medium">Pindai Aktif</span>
+              <span className="text-xs md:text-sm font-medium">Live Detection</span>
+              {detectedObjects.length > 0 && (
+                <span className="bg-green-400 text-black px-2 py-0.5 rounded-full text-xs font-bold">
+                  {detectedObjects.length}
+                </span>
+              )}
             </div>
           )}
 
           {/* Scanning Grid */}
           {isDirectVideoReady && (
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className="w-32 h-32 md:w-48 md:h-48 border-2 border-green-400 border-dashed rounded-lg opacity-50"></div>
+              <div className="w-32 h-32 md:w-48 md:h-48 border-2 border-green-400 border-dashed rounded-lg opacity-30 animate-pulse"></div>
             </div>
           )}
+
+          {/* Debug Info (dapat dihapus di production) */}
+          {isDirectVideoReady && (
+            <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+              Video: {directScanVideoRef.current?.videoWidth}x{directScanVideoRef.current?.videoHeight} | Objects:{" "}
+              {detectedObjects.length} | Last scan: {new Date(lastScanTime).toLocaleTimeString()}
+            </div>
+          )}
+
+          <canvas ref={canvasRef} className="hidden" />
         </div>
       )
     }
@@ -346,12 +583,13 @@ export default function Scan({ onNavigate }) {
 
     if (selectedImage) {
       return (
-        <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="w-full h-full flex items-center justify-center p-4 relative">
           <img
             src={selectedImage || "/placeholder.svg"}
             alt="Selected for scanning"
             className="max-w-full max-h-full object-contain rounded-2xl"
           />
+          {renderClassificationResults()}
         </div>
       )
     }
@@ -360,7 +598,8 @@ export default function Scan({ onNavigate }) {
       return (
         <div className="text-center text-white">
           <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-sm md:text-lg font-semibold">{scanMode === "direct" ? "Memindai..." : "Memproses..."}</p>
+          <p className="text-sm md:text-lg font-semibold">Mengklasifikasi gambar...</p>
+          <p className="text-xs md:text-sm text-[#d9e5d8] mt-2">Menganalisis objek artefak museum</p>
         </div>
       )
     }
@@ -389,45 +628,42 @@ export default function Scan({ onNavigate }) {
 
             {/* Action Buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-1 gap-3 md:gap-4">
-              {/* Direct Scan Button */}
+              {/* Live Camera Scan Button - YOLO Detection */}
               <button
                 onClick={isDirectScanActive ? stopDirectScan : handleDirectScan}
                 disabled={isScanning || isCameraOpen}
-                className={`flex items-center justify-center xl:justify-start gap-3 md:gap-4 w-full p-3 md:p-4 rounded-2xl text-white font-semibold transition-all duration-200 ${
-                  isDirectScanActive
+                className={`flex items-center justify-center xl:justify-start gap-3 md:gap-4 w-full p-3 md:p-4 rounded-2xl text-white font-semibold transition-all duration-200 ${isDirectScanActive
                     ? "bg-red-600 hover:bg-red-700"
                     : scanMode === "direct"
                       ? "bg-[#3a4e39]"
                       : "bg-[#475F45] hover:bg-[#3a4e39]"
-                } ${isScanning || isCameraOpen ? "opacity-50 cursor-not-allowed" : ""}`}
+                  } ${isScanning || isCameraOpen ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isDirectScanActive ? (
                   <X className="w-5 h-5 md:w-6 md:h-6" />
                 ) : (
                   <Cube className="w-5 h-5 md:w-6 md:h-6" />
                 )}
-                <span className="text-sm md:text-base">{isDirectScanActive ? "Stop Pindai" : "Pindai Langsung"}</span>
+                <span className="text-sm md:text-base">{isDirectScanActive ? "Stop Live Scan" : "Live Camera"}</span>
               </button>
 
-              {/* Take Picture Button */}
+              {/* Take Picture Button - Classification */}
               <button
                 onClick={handleTakePicture}
                 disabled={isScanning || isCameraOpen || isDirectScanActive}
-                className={`flex items-center justify-center xl:justify-start gap-3 md:gap-4 w-full p-3 md:p-4 rounded-2xl text-white font-semibold transition-all duration-200 ${
-                  scanMode === "camera" || isCameraOpen ? "bg-[#3a4e39]" : "bg-[#475F45] hover:bg-[#3a4e39]"
-                } ${isScanning || isCameraOpen || isDirectScanActive ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`flex items-center justify-center xl:justify-start gap-3 md:gap-4 w-full p-3 md:p-4 rounded-2xl text-white font-semibold transition-all duration-200 ${scanMode === "camera" || isCameraOpen ? "bg-[#3a4e39]" : "bg-[#475F45] hover:bg-[#3a4e39]"
+                  } ${isScanning || isCameraOpen || isDirectScanActive ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <Camera className="w-5 h-5 md:w-6 md:h-6" />
-                <span className="text-sm md:text-base">{isCameraOpen ? "Kamera Aktif" : "Ambil Gambar"}</span>
+                <span className="text-sm md:text-base">{isCameraOpen ? "Kamera Aktif" : "Ambil Foto"}</span>
               </button>
 
-              {/* Upload Image Button */}
+              {/* Upload Image Button - Classification */}
               <button
                 onClick={handleUploadImage}
                 disabled={isScanning || isCameraOpen || isDirectScanActive}
-                className={`flex items-center justify-center xl:justify-start gap-3 md:gap-4 w-full p-3 md:p-4 rounded-2xl text-white font-semibold transition-all duration-200 ${
-                  scanMode === "upload" ? "bg-[#3a4e39]" : "bg-[#475F45] hover:bg-[#3a4e39]"
-                } ${isScanning || isCameraOpen || isDirectScanActive ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`flex items-center justify-center xl:justify-start gap-3 md:gap-4 w-full p-3 md:p-4 rounded-2xl text-white font-semibold transition-all duration-200 ${scanMode === "upload" ? "bg-[#3a4e39]" : "bg-[#475F45] hover:bg-[#3a4e39]"
+                  } ${isScanning || isCameraOpen || isDirectScanActive ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <Upload className="w-5 h-5 md:w-6 md:h-6" />
                 <span className="text-sm md:text-base">Unggah Gambar</span>
@@ -443,11 +679,10 @@ export default function Scan({ onNavigate }) {
                 <button
                   onClick={capturePhoto}
                   disabled={!isVideoReady}
-                  className={`flex-1 p-3 md:p-4 rounded-2xl font-semibold transition-all duration-200 ${
-                    isVideoReady
+                  className={`flex-1 p-3 md:p-4 rounded-2xl font-semibold transition-all duration-200 ${isVideoReady
                       ? "bg-blue-600 text-white hover:bg-blue-700"
                       : "bg-gray-400 text-gray-600 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-center gap-2">
                     <CameraFlash className="w-4 h-4 md:w-5 md:h-5" />
@@ -463,53 +698,95 @@ export default function Scan({ onNavigate }) {
               </div>
             )}
 
-            {/* Detection Info */}
+            {/* Live Detection Info */}
             {isDirectScanActive && (
               <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
                 <div className="flex items-center gap-2 font-semibold text-gray-800 mb-2">
                   <Target className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
-                  <h3 className="text-sm md:text-base">Deteksi Real-time</h3>
+                  <h3 className="text-sm md:text-base">Live Detection (YOLO)</h3>
                 </div>
                 <p className="text-xs md:text-sm text-gray-600 mb-3">
-                  Arahkan kamera ke artefak untuk mendeteksi objek
+                  Arahkan kamera ke artefak untuk deteksi real-time
                 </p>
+
+                {/* Debug Info */}
+                <div className="text-xs text-gray-500 mb-2 space-y-1">
+                  <div>Status: {isDirectVideoReady ? "✅ Video Ready" : "⏳ Loading..."}</div>
+                  <div>Stream: {directScanStreamRef.current ? "✅ Active" : "❌ None"}</div>
+                  <div>Detection: {detectionIntervalRef.current ? "✅ Running" : "❌ Stopped"}</div>
+                </div>
 
                 {detectedObjects.length > 0 ? (
                   <div className="space-y-2">
-                    {detectedObjects.map((obj) => (
-                      <div key={obj.id} className="bg-white p-2 rounded border">
-                        <div className="font-medium text-xs md:text-sm text-gray-800">{obj.name}</div>
-                        <div className="text-xs text-gray-500">Confidence: {(obj.confidence * 100).toFixed(1)}%</div>
+                    {detectedObjects.slice(0, 3).map((obj, index) => (
+                      <div key={index} className="bg-white p-2 rounded border">
+                        <div className="font-medium text-xs md:text-sm text-gray-800">{obj.name || obj.class}</div>
+                        <div className="text-xs text-gray-500">
+                          Akurasi: {((obj.confidence || obj.score) * 100).toFixed(1)}%
+                        </div>
                       </div>
                     ))}
+                    {detectedObjects.length > 3 && (
+                      <div className="text-xs text-gray-500">+{detectedObjects.length - 3} objek lainnya</div>
+                    )}
                   </div>
                 ) : (
-                  <div className="text-xs md:text-sm text-gray-500">Mencari objek...</div>
+                  <div className="text-xs md:text-sm text-gray-500">
+                    {isDirectVideoReady ? "Mencari objek..." : "Memuat kamera..."}
+                  </div>
                 )}
               </div>
             )}
 
-            {/* Analyze Button */}
+            {/* Classification Analyze Button */}
             {selectedImage && !isCameraOpen && !isDirectScanActive && (
               <button
                 onClick={handleAnalyze}
                 disabled={isScanning}
-                className={`w-full p-3 md:p-4 rounded-2xl font-semibold transition-all duration-200 ${
-                  isScanning
+                className={`w-full p-3 md:p-4 rounded-2xl font-semibold transition-all duration-200 ${isScanning
                     ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                     : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
+                  }`}
               >
-                <span className="text-sm md:text-base">{isScanning ? "Menganalisis..." : "Analisis Gambar"}</span>
+                <span className="text-sm md:text-base">{isScanning ? "Mengklasifikasi..." : "Klasifikasi Gambar"}</span>
               </button>
             )}
 
-            {/* Error Message */}
-            {cameraError && (
+            {/* Error Messages */}
+            {(cameraError || apiError) && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4">
-                <p className="text-red-600 text-xs md:text-sm">{cameraError}</p>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-red-600 text-xs md:text-sm font-medium mb-1">
+                      {cameraError ? "Error Kamera" : "Error API"}
+                    </p>
+                    <p className="text-red-600 text-xs md:text-sm">{cameraError || apiError}</p>
+                    {apiError && (
+                      <p className="text-red-500 text-xs mt-1">
+                        Pastikan FastAPI server berjalan di http://localhost:8000
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
+
+            {/* Method Info */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                <span className="text-blue-800 text-xs md:text-sm font-medium">Info Metode</span>
+              </div>
+              <div className="text-xs space-y-1">
+                <p className="text-blue-700">
+                  • <strong>Live Camera:</strong> YOLO detection dengan bounding box
+                </p>
+                <p className="text-blue-700">
+                  • <strong>Foto & Upload:</strong> Klasifikasi dengan nama & deskripsi
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Content Area - Bottom on mobile, Right on desktop */}
@@ -526,7 +803,8 @@ export default function Scan({ onNavigate }) {
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                   <div className="text-center text-white">
                     <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-sm md:text-lg font-semibold">Menganalisis gambar...</p>
+                    <p className="text-sm md:text-lg font-semibold">Mengklasifikasi gambar...</p>
+                    <p className="text-xs md:text-sm text-[#d9e5d8] mt-2">Menganalisis objek artefak museum</p>
                   </div>
                 </div>
               )}

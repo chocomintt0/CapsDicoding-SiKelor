@@ -42,7 +42,7 @@ export default function EventSearch({ onSearch, onSort, onStatusChange }) {
         <input
           type="text"
           className="w-full p-3 pl-10 text-sm bg-transparent text-gray-900 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
-          placeholder="Search events..."
+          placeholder="Cari events berdasarkan nama, deskripsi, lokasi, atau penyelenggara..."
           value={searchTerm}
           onChange={handleSearch}
         />
@@ -58,11 +58,10 @@ export default function EventSearch({ onSearch, onSort, onStatusChange }) {
               <button
                 key={status.value}
                 onClick={() => handleStatusToggle(status.value)}
-                className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                  selectedStatuses.includes(status.value)
+                className={`px-3 py-1 text-sm rounded-full transition-colors ${selectedStatuses.includes(status.value)
                     ? `${status.color} text-white`
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 {status.label}
               </button>

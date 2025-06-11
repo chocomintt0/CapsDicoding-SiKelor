@@ -1,34 +1,11 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { articlesData, formatArticleDate } from "../data/articles"
 
 export default function ArticlePreview({ onViewAllArticles }) {
-  const [articles] = useState([
-    {
-      id: 1,
-      image: "/placeholder.svg?height=200&width=350",
-      title: "Tarian Tradisional Sulawesi Tengah",
-      description: "Mengenal lebih dekat tarian-tarian tradisional dari Sulawesi Tengah yang penuh makna dan filosofi.",
-      category: "Etnografi",
-      publishedAt: "2025-05-10",
-    },
-    {
-      id: 2,
-      image: "/placeholder.svg?height=200&width=350",
-      title: "Sejarah Museum Sulawesi Tengah",
-      description: "Perjalanan panjang pendirian museum dan koleksi bersejarah yang tersimpan di dalamnya.",
-      category: "Sejarah",
-      publishedAt: "2025-04-15",
-    },
-    {
-      id: 3,
-      image: "/placeholder.svg?height=200&width=350",
-      title: "Alat Musik Tradisional Kaili",
-      description: "Mengenal berbagai alat musik tradisional suku Kaili yang masih dilestarikan hingga saat ini.",
-      category: "Seni Tradisional",
-      publishedAt: "2025-03-22",
-    },
-  ])
+  // Get the 3 most recent articles
+  const [articles] = useState(articlesData.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3))
 
   const sectionRef = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -41,11 +18,12 @@ export default function ArticlePreview({ onViewAllArticles }) {
     return () => observer.disconnect()
   }, [])
 
+  const handleReadMore = (url) => {
+    window.open(url, "_blank", "noopener,noreferrer")
+  }
+
   return (
-    <section
-      ref={sectionRef}
-      className="bg-gradient-to-t from-[#ffffffd7] to-[#ffffff] py-16 px-6 transition-all"
-    >
+    <section ref={sectionRef} className="bg-gradient-to-t from-[#ffffffd7] to-[#ffffff] py-16 px-6 transition-all">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-gray-800 text-3xl font-bold mb-4">Latest Articles</h2>
@@ -59,35 +37,34 @@ export default function ArticlePreview({ onViewAllArticles }) {
             <div
               key={article.id}
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer flex flex-col min-h-[370px]"
-              onClick={() => onViewAllArticles("article-detail", article.id)}
+              onClick={() => handleReadMore(article.url)}
             >
               <div className="relative">
                 <img
-                  src={article.image || "/placeholder.svg"}
+                  src={article.gambar || "/placeholder.svg?height=200&width=350"}
                   alt={article.title}
                   className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.target.src = "/placeholder.svg?height=200&width=350"
+                  }}
                 />
                 <div className="absolute top-4 left-4">
-                  <span className="bg-[#475F45] text-white text-xs px-2 py-1 rounded-full">{article.category}</span>
+                  <span className="bg-[#475F45] text-white text-xs px-2 py-1 rounded-full">{article.kategori}</span>
                 </div>
               </div>
               <div className="p-5 flex flex-col justify-between flex-grow">
                 <div>
-                  <h3 className="text-gray-800 text-lg font-semibold mb-2">{article.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{article.description}</p>
+                  <h3 className="text-gray-800 text-lg font-semibold mb-2 line-clamp-2">{article.title}</h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {article.deskripsi.length > 120 ? article.deskripsi.substring(0, 120) + "..." : article.deskripsi}
+                  </p>
                 </div>
                 <div className="flex justify-between items-center mt-auto pt-4">
-                  <span className="text-xs text-gray-500">
-                    {new Date(article.publishedAt).toLocaleDateString("id-ID", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
+                  <span className="text-xs text-gray-500">{formatArticleDate(article.date)}</span>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
-                      onViewAllArticles("article-detail", article.id)
+                      handleReadMore(article.url)
                     }}
                     className="bg-transparent text-[#475F45] hover:text-[#3a4e39] text-sm font-medium"
                   >

@@ -2,50 +2,14 @@
 
 import { useState } from "react"
 import CollectionDetailModal from "./CollectionDetailModal"
+import { collectionsData } from "../data/collections"
 
 export default function Collection({ onNavigate }) {
-  const [collections] = useState([
-    {
-      id: 1,
-      title: "Keris Tradisional",
-      subtitle: "Senjata pusaka bersejarah",
-      image: "/placeholder.svg?height=200&width=250",
-      description:
-        "Koleksi keris tradisional dari berbagai daerah di Sulawesi Tengah dengan ukiran dan motif yang unik.",
-    },
-    {
-      id: 2,
-      title: "Topeng Kaili",
-      subtitle: "Topeng ritual suku Kaili",
-      image: "/placeholder.svg?height=200&width=250",
-      description: "Topeng tradisional yang digunakan dalam upacara adat dan ritual keagamaan suku Kaili.",
-    },
-    {
-      id: 3,
-      title: "Kain Tenun Donggala",
-      subtitle: "Tekstil tradisional bercorak",
-      image: "/placeholder.svg?height=200&width=250",
-      description: "Kain tenun dengan motif khas Donggala yang dibuat menggunakan teknik tradisional turun temurun.",
-    },
-    {
-      id: 4,
-      title: "Alat Musik Gong",
-      subtitle: "Instrumen musik tradisional",
-      image: "/placeholder.svg?height=200&width=250",
-      description: "Gong perunggu yang digunakan dalam berbagai upacara adat dan pertunjukan musik tradisional.",
-    },
-    {
-      id: 5,
-      title: "Perhiasan Emas Antik",
-      subtitle: "Ornamen tradisional emas",
-      image: "/placeholder.svg?height=200&width=250",
-      description:
-        "Koleksi perhiasan emas antik dengan desain dan teknik pembuatan yang mencerminkan kemahiran pengrajin masa lalu.",
-    },
-  ])
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCollectionId, setSelectedCollectionId] = useState(null)
+
+  // Ambil 5 koleksi pertama untuk preview
+  const previewCollections = collectionsData.slice(0, 5)
 
   const handleLearnMore = (item) => {
     setSelectedCollectionId(item.id)
@@ -85,16 +49,7 @@ export default function Collection({ onNavigate }) {
 
           {/* Collection Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
-            {/* First row - 2 items */}
-            <div className="lg:col-span-1">
-              <CollectionCard item={collections[0]} onLearnMore={handleLearnMore} />
-            </div>
-            <div className="lg:col-span-1 lg:col-start-3">
-              <CollectionCard item={collections[1]} onLearnMore={handleLearnMore} />
-            </div>
-
-            {/* Second row - 3 items */}
-            {collections.slice(2, 5).map((item) => (
+            {previewCollections.map((item, index) => (
               <div key={item.id} className="lg:col-span-1">
                 <CollectionCard item={item} onLearnMore={handleLearnMore} />
               </div>
@@ -131,16 +86,22 @@ function CollectionCard({ item, onLearnMore }) {
         {/* Image */}
         <div className="aspect-[4/3] mb-4 overflow-hidden rounded-xl bg-gradient-to-br from-yellow-600 to-yellow-800">
           <img
-            src={item.image || "/placeholder.svg"}
-            alt={item.title}
+            src={item.gambar || "/placeholder.svg"}
+            alt={item.nama}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              e.target.src = "/placeholder.svg?height=300&width=400"
+            }}
           />
         </div>
 
         {/* Content */}
         <div className="text-white">
-          <h4 className="font-bold text-lg md:text-xl mb-1">{item.title}</h4>
-          <p className="text-white/70 text-sm md:text-base mb-4">{item.subtitle}</p>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-white/20 text-white text-xs px-2 py-1 rounded-full">{item.kategori}</span>
+          </div>
+          <h4 className="font-bold text-lg md:text-xl mb-1">{item.nama}</h4>
+          <p className="text-white/70 text-sm md:text-base mb-4 line-clamp-2">{item.deskripsi}</p>
 
           <button
             onClick={(e) => {

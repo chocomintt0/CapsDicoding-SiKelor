@@ -2,65 +2,74 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Calendar, Clock } from "./icons"
+import { eventsData, formatEventDate, formatEventDateDisplay, getEventStatus } from "../data/events"
 
 export default function EventPreview({ onViewAllEvents }) {
-  const [events] = useState([
-    {
-      id: 1,
-      date: "15",
-      month: "JUN",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Pameran Artefak Megalitik Lembah Bada",
-      description: "Pameran khusus menampilkan koleksi artefak megalitik dari Lembah Bada yang penuh misteri.",
-      eventDate: "JUN 15, 2025",
-      eventTime: "09:00 WITA",
-      fullDate: "2025-06-15",
-      status: "upcoming",
-    },
-    {
-      id: 2,
-      date: "10",
-      month: "MAY",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Workshop Tenun Tradisional Donggala",
-      description: "Belajar teknik tenun tradisional Donggala langsung dari pengrajin berpengalaman.",
-      eventDate: "MAY 10, 2025",
-      eventTime: "14:00 WITA",
-      fullDate: "2025-05-10",
-      status: "ongoing",
-    },
-    {
-      id: 3,
-      date: "20",
-      month: "JUL",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Tur Museum Malam Hari",
-      description: "Pengalaman unik menjelajahi museum di malam hari dengan pencahayaan khusus.",
-      eventDate: "JUL 20, 2025",
-      eventTime: "19:00 WITA",
-      fullDate: "2025-07-20",
-      status: "upcoming",
-    },
-  ])
+  const [events] = useState(() => {
+    // Get first 3 events and format them for display
+    return eventsData.events.slice(0, 3).map((event) => {
+      const dateInfo = formatEventDate(event.date)
+      const status = getEventStatus(event.date, event.end_date)
+
+      return {
+        id: event.id,
+        date: dateInfo.date,
+        month: dateInfo.month,
+        image: event.image_url,
+        title: event.title,
+        description: event.short_description,
+        eventDate: formatEventDateDisplay(event.date),
+        eventTime: event.time,
+        fullDate: event.date,
+        status: status,
+      }
+    })
+  })
 
   const sectionRef = useRef(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      setVisible(entry.isIntersecting)
-    }, { threshold: 0.2 })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setVisible(entry.isIntersecting)
+      },
+      { threshold: 0.2 },
+    )
 
     if (sectionRef.current) observer.observe(sectionRef.current)
 
     return () => observer.disconnect()
   }, [])
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "upcoming":
+        return "Akan Datang"
+      case "ongoing":
+        return "Sedang Berlangsung"
+      case "completed":
+        return "Selesai"
+      default:
+        return "Akan Datang"
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "upcoming":
+        return "bg-blue-500/20 text-blue-200"
+      case "ongoing":
+        return "bg-green-500/20 text-green-200"
+      case "completed":
+        return "bg-gray-500/20 text-gray-200"
+      default:
+        return "bg-blue-500/20 text-blue-200"
+    }
+  }
+
   return (
-    <section
-      ref={sectionRef}
-      className="bg-gradient-to-t from-[#263628] via-[#476649] to-[#5f8861] py-16 px-6"
-    >
+    <section ref={sectionRef} className="bg-gradient-to-t from-[#263628] via-[#476649] to-[#5f8861] py-16 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-white mb-4">Upcoming Events</h2>
@@ -90,10 +99,13 @@ export default function EventPreview({ onViewAllEvents }) {
                   {/* Image Column */}
                   <div className="md:w-1/4">
                     <img
-                      src={event.image || "/placeholder.svg"}
+                      src={event.image || "/placeholder.svg?height=120&width=192"}
                       alt={event.title}
                       className="w-full h-full object-cover"
                       style={{ minHeight: "120px" }}
+                      onError={(e) => {
+                        e.target.src = "/placeholder.svg?height=120&width=192"
+                      }}
                     />
                   </div>
 
@@ -102,7 +114,7 @@ export default function EventPreview({ onViewAllEvents }) {
                     <h3 className="text-lg md:text-xl font-semibold text-white mb-2 group-hover:text-white/90 transition-colors">
                       {event.title}
                     </h3>
-                    <p className="text-white/80 mb-4 text-sm md:text-base">{event.description}</p>
+                    <p className="text-white/80 mb-4 text-sm md:text-base line-clamp-2">{event.description}</p>
 
                     <div className="flex flex-wrap items-center gap-4 text-sm text-white/70">
                       <div className="flex items-center gap-1">
@@ -113,20 +125,8 @@ export default function EventPreview({ onViewAllEvents }) {
                         <Clock className="w-4 h-4" />
                         <span>{event.eventTime}</span>
                       </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          event.status === "upcoming"
-                            ? "bg-blue-500/20 text-blue-200"
-                            : event.status === "ongoing"
-                            ? "bg-green-500/20 text-green-200"
-                            : "bg-gray-500/20 text-gray-200"
-                        }`}
-                      >
-                        {event.status === "upcoming"
-                          ? "Akan Datang"
-                          : event.status === "ongoing"
-                          ? "Sedang Berlangsung"
-                          : "Selesai"}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
+                        {getStatusLabel(event.status)}
                       </span>
                     </div>
                   </div>

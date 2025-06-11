@@ -4,82 +4,37 @@ import { useState, useEffect } from "react"
 import EventNavbar from "../components/EventNavbar"
 import EventCard from "../components/EventCard"
 import EventSearch from "../components/EventSearch"
+import {
+  eventsData,
+  formatEventDate,
+  formatEventDateDisplay,
+  getEventStatus,
+  searchEvents,
+  filterEventsByStatus,
+  sortEvents,
+} from "../data/events"
 
 export default function Events({ onNavigate }) {
-  const allEvents = [
-    {
-      id: 1,
-      date: "15",
-      month: "JUN",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Pameran Artefak Megalitik Lembah Bada",
-      description: "Pameran khusus menampilkan koleksi artefak megalitik dari Lembah Bada yang penuh misteri.",
-      eventDate: "JUN 15, 2025",
-      eventTime: "09:00 WITA",
-      fullDate: "2025-06-15",
-      status: "upcoming",
-    },
-    {
-      id: 2,
-      date: "10",
-      month: "MAY",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Workshop Tenun Tradisional Donggala",
-      description: "Belajar teknik tenun tradisional Donggala langsung dari pengrajin berpengalaman.",
-      eventDate: "MAY 10, 2025",
-      eventTime: "14:00 WITA",
-      fullDate: "2025-05-10",
-      status: "ongoing",
-    },
-    {
-      id: 3,
-      date: "25",
-      month: "APR",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Seminar Sejarah Kerajaan Kaili",
-      description: "Diskusi mendalam tentang sejarah dan peradaban Kerajaan Kaili di Sulawesi Tengah.",
-      eventDate: "APR 25, 2025",
-      eventTime: "10:00 WITA",
-      fullDate: "2025-04-25",
-      status: "completed",
-    },
-    {
-      id: 4,
-      date: "20",
-      month: "JUL",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Tur Museum Malam Hari",
-      description: "Pengalaman unik menjelajahi museum di malam hari dengan pencahayaan khusus.",
-      eventDate: "JUL 20, 2025",
-      eventTime: "19:00 WITA",
-      fullDate: "2025-07-20",
-      status: "upcoming",
-    },
-    {
-      id: 5,
-      date: "05",
-      month: "AUG",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Festival Musik Tradisional Sulawesi Tengah",
-      description: "Pertunjukan musik tradisional dari berbagai suku di Sulawesi Tengah.",
-      eventDate: "AUG 05, 2025",
-      eventTime: "16:00 WITA",
-      fullDate: "2025-08-05",
-      status: "upcoming",
-    },
-    {
-      id: 6,
-      date: "12",
-      month: "MAR",
-      image: "/placeholder.svg?height=128&width=192",
-      title: "Peluncuran Koleksi Numismatik Baru",
-      description: "Perkenalan koleksi mata uang kuno terbaru dari berbagai era di Sulawesi Tengah.",
-      eventDate: "MAR 12, 2025",
-      eventTime: "11:00 WITA",
-      fullDate: "2025-03-12",
-      status: "completed",
-    },
-  ]
+  const [allEvents] = useState(() => {
+    // Transform events data for display
+    return eventsData.events.map((event) => {
+      const dateInfo = formatEventDate(event.date)
+      const status = getEventStatus(event.date, event.end_date)
+
+      return {
+        id: event.id,
+        date: dateInfo.date,
+        month: dateInfo.month,
+        image: event.image_url,
+        title: event.title,
+        description: event.short_description,
+        eventDate: formatEventDateDisplay(event.date),
+        eventTime: event.time,
+        fullDate: event.date,
+        status: status,
+      }
+    })
+  })
 
   const [events, setEvents] = useState(allEvents)
   const [searchTerm, setSearchTerm] = useState("")
@@ -88,39 +43,22 @@ export default function Events({ onNavigate }) {
 
   useEffect(() => {
     let filteredEvents = [...allEvents]
+
+    // Apply search filter
     if (searchTerm) {
-      filteredEvents = filteredEvents.filter(
-        (event) =>
-          event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          event.description.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    }
-    if (activeStatuses.length > 0) {
-      filteredEvents = filteredEvents.filter((event) => activeStatuses.includes(event.status))
-    }
-    switch (sortOption) {
-      case "date-asc":
-        filteredEvents.sort((a, b) => new Date(a.fullDate) - new Date(b.fullDate))
-        break
-      case "date-desc":
-        filteredEvents.sort((a, b) => new Date(b.fullDate) - new Date(a.fullDate))
-        break
-      case "a-z":
-        filteredEvents.sort((a, b) => a.title.localeCompare(b.title))
-        break
-      case "z-a":
-        filteredEvents.sort((a, b) => b.title.localeCompare(a.title))
-        break
-      case "status":
-        const statusOrder = { upcoming: 1, ongoing: 2, completed: 3 }
-        filteredEvents.sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
-        break
-      default:
-        break
+      filteredEvents = searchEvents(filteredEvents, searchTerm)
     }
 
+    // Apply status filter
+    if (activeStatuses.length > 0) {
+      filteredEvents = filterEventsByStatus(filteredEvents, activeStatuses)
+    }
+
+    // Apply sorting
+    filteredEvents = sortEvents(filteredEvents, sortOption)
+
     setEvents(filteredEvents)
-  }, [searchTerm, sortOption, activeStatuses])
+  }, [searchTerm, sortOption, activeStatuses, allEvents])
 
   const handleSearch = (term) => {
     setSearchTerm(term)
