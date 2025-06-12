@@ -63,10 +63,8 @@ venv.bak/
 *.tflite
 
 # Data
-data/
 datasets/
 *.csv
-*.json
 !package.json
 !package-lock.json
 
