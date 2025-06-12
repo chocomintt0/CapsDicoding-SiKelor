@@ -6,7 +6,9 @@ module.exports = {
   ],
   theme: {
     extend: {
-      
+      backgroundSize:{
+        '110': '110%',
+      }
     },
   },
   plugins: [],

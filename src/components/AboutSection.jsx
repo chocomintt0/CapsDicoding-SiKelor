@@ -56,21 +56,21 @@ const About = ({ onNavigate }) => {
         {/* KONTEN GAMBAR */}
         <div className="grid grid-cols-2 gap-4">
           <img
-            src="/src/assets/bg-hero.png"
+            src="/src/assets/3.webp"
             alt="Gedung Museum"
             className={`w-full h-[120px] md:h-[160px] object-cover rounded-lg shadow-md col-span-2 transition-all duration-700 ease-in-out delay-200 ${
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           />
           <img
-            src="/src/assets/bg-hero.png"
+            src="/src/assets/1.webp"
             alt="Artefak"
             className={`w-full h-[100px] md:h-[120px] object-cover rounded-lg shadow-md transition-all duration-700 ease-in-out delay-300 ${
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           />
           <img
-            src="/src/assets/bg-hero.png"
+            src="/src/assets/2.webp"
             alt="Kostum Tradisional"
             className={`w-full h-[100px] md:h-[120px] object-cover rounded-lg shadow-md transition-all duration-700 ease-in-out delay-500 ${
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
