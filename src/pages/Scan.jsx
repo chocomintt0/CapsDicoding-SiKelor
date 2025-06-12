@@ -375,7 +375,7 @@ export default function Scan({ onNavigate }) {
     if (!classificationResult) return null
 
     return (
-      <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg p-4 max-w-sm shadow-lg">
+      <div className="absolute top-4 right-4 md:left-[470px] bg-white bg-opacity-90 rounded-lg p-4 max-w-sm shadow-lg">
         <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
           <CheckCircle className="w-4 h-4 text-green-600" />
           Hasil Klasifikasi
