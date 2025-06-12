@@ -22,7 +22,6 @@ SIKELOR adalah aplikasi museum digital yang menggunakan teknologi AI untuk menge
 - **Machine Learning**: 
   - TensorFlow untuk klasifikasi (9 kelas)
   - YOLO untuk deteksi objek (11 kelas)
-- **Input Size**: 640x640 pixels untuk kedua model
 
 ## 📋 Prerequisites
 
@@ -41,40 +40,7 @@ git clone <repository-url>
 cd nama-proyek
 ```
 
-### 2. Download Model Machine Learning
-
-> **⚠️ Penting**: Model ML diperlukan untuk menjalankan fitur AI
-
-1. **Download model dari Google Drive**:
-   \`\`\`
-   https://drive.google.com/file/d/1j75Yiy1ZApYOUY7eqMBTxqVN2Xi6ZTKp/view?usp=drive_link
-   \`\`\`
-
-   > **Catatan**: Jika link tidak dapat diakses, hubungi tim developer untuk mendapatkan file model.
-
-2. **Extract file yang didownload**:
-   - Extract file `.zip` atau `.rar` yang telah didownload
-   - Anda akan mendapatkan folder berisi file model
-
-3. **Pindahkan ke folder model**:
-   ```bash
-   # Buat folder model jika belum ada
-   mkdir -p server/ml-api/model
-   
-   # Pindahkan file model ke folder tersebut
-   # File yang diperlukan:
-   # - best.pt (YOLO model)
-   # - model_sikelor.h5 (TensorFlow model)
-   ```
-
-   Struktur folder model yang benar:
-   ```
-   server/ml-api/model/
-   ├── best.pt              # YOLO model untuk deteksi objek
-   └── model_sikelor.h5     # TensorFlow model untuk klasifikasi
-   ```
-
-### 3. Setup Frontend (React)
+### 2. Setup Frontend (React)
 
 ```bash
 # Install dependencies
@@ -84,7 +50,7 @@ npm install
 yarn install
 ```
 
-### 4. Setup Backend (FastAPI)
+### 3. Setup Backend (FastAPI)
 
 ```bash
 # Masuk ke direktori ML API
@@ -97,17 +63,23 @@ python -m venv venv
 # Untuk Windows (Command Prompt):
 venv\Scripts\activate
 
+# untuk windows (bash)
+source venv/Scripts/activate
+
 # Untuk Windows (PowerShell):
 venv\Scripts\Activate.ps1
 
 # Untuk Linux/Mac:
 source venv/bin/activate
 
+# upgrade pip
+python.exe -m pip install --upgrade pip
+
 # Install dependencies Python
 pip install -r requirements.txt
 ```
 
-### 5. Menjalankan Aplikasi
+### 4. Menjalankan Aplikasi
 
 Anda perlu menjalankan 2 terminal secara bersamaan:
 
@@ -116,7 +88,7 @@ Anda perlu menjalankan 2 terminal secara bersamaan:
 ```bash
 # Pastikan Anda di direktori server/ml-api dan virtual environment aktif
 cd server/ml-api
-source venv/Scripts/activate  # Windows
+source venv/Scripts/activate  # Windows (bash)
 # source venv/bin/activate    # Linux/Mac
 
 # Jalankan FastAPI server
@@ -301,4 +273,3 @@ Jika mengalami masalah dalam setup atau menjalankan aplikasi, silakan hubungi ti
 ---
 
 **Selamat menggunakan SIKELOR! 🏛️✨**
-
