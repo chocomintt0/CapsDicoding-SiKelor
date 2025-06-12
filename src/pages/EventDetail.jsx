@@ -139,11 +139,11 @@ export default function EventDetail({ onNavigate, eventId }) {
           {/* Event Image */}
           <div className="mb-8">
             <img
-              src={event.image_url || "/placeholder.svg?height=400&width=800"}
+              src={event.image_url || "/placeholder.svg"}
               alt={event.title}
-              className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
+              className="w-full h-64 md:h-[450px] md:w-[710px] object-fill rounded-lg shadow-lg"
               onError={(e) => {
-                e.target.src = "/placeholder.svg?height=400&width=800"
+                e.target.src = "/placeholder.svg"
               }}
             />
           </div>

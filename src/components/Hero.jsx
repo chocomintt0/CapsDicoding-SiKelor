@@ -29,7 +29,7 @@ export default function Hero({ onNavigate }) {
 
   return (
     <section
-      className="relative z-10 w-full h-[700px] flex items-center px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="relative z-10 w-full h-auto flex items-center px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{
         backgroundImage: "url('/src/assets/bg-hero.png')",
         backgroundAttachment: "fixed",
@@ -39,10 +39,10 @@ export default function Hero({ onNavigate }) {
     >
 
       {/* Overlay kabut */}
-      <div className="absolute inset-0 bg-black/20 z-0" />
+      <div className="absolute h-auto inset-0 bg-black/20 z-0" />
 
       {/* Konten */}
-      <div className="w-full max-w-5xl mx-auto text-white flex flex-col items-start z-10">
+      <div className="w-full max-w-5xl mx-auto text-white flex flex-col items-start z-10 mt-40 p-7 md:mt-34">
         <h2
           className="font-bold text-[35px] leading-tight mb-6"
           style={{

@@ -583,16 +583,19 @@ export default function Scan({ onNavigate }) {
 
     if (selectedImage) {
       return (
-        <div className="w-full h-full flex items-center justify-center p-4 relative">
-          <img
-            src={selectedImage || "/placeholder.svg"}
-            alt="Selected for scanning"
-            className="max-w-full max-h-full object-contain rounded-2xl"
-          />
+        <div className="w-full md:h-full max-w-[800px] max-h-[90vh] md:max-h-[94vh] flex items-center justify-center p-6 relative mx-auto">
+          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+            <img
+              src={selectedImage || "/placeholder.svg"}
+              alt="Selected for scanning"
+              className="object-contain max-w-full max-h-full rounded-2xl"
+            />
+          </div>
           {renderClassificationResults()}
         </div>
-      )
+      );
     }
+     
 
     if (isScanning) {
       return (

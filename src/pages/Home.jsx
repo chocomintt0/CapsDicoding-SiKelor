@@ -160,8 +160,8 @@ function Home({ onNavigate }) {
               <ul className="space-y-2 text-black/80">
                 <li>
                   Email:{" "}
-                  <a href="mailto:info@sikelor.id" className="hover:text-gray-600 transition-colors">
-                    info@sikelor.id
+                  <a href="mailto:infosikelor@gmail.com" className="hover:text-gray-600 transition-colors">
+                    infosikelor@gmail.com
                   </a>
                 </li>
                 <li>Telp: +62 812-3456-7890</li>
