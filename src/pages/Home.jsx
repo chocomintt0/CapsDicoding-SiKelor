@@ -130,24 +130,24 @@ function Home({ onNavigate }) {
               <h4 className="font-semibold text-base mb-3">Navigasi</h4>
               <ul className="space-y-2 text-black/80">
                 <li>
-                  <button onClick={() => handleNavigate("home")} className="hover:text-gray-600 transition-colors">
+                  <button onClick={() => handleNavigate("home")} className="bg-transparent p-0 hover:text-gray-600 transition-colors">
                     Beranda
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate("event")} className="hover:text-gray-600 transition-colors">
+                  <button onClick={() => handleNavigate("event")} className="bg-transparent p-0 hover:text-gray-600 transition-colors">
                     Event
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate("articles")} className="hover:text-gray-600 transition-colors">
+                  <button onClick={() => handleNavigate("articles")} className="bg-transparent p-0 hover:text-gray-600 transition-colors">
                     Artikel
                   </button>
                 </li>
                 <li>
                   <button
                     onClick={() => handleNavigate("collections")}
-                    className="hover:text-gray-600 transition-colors"
+                    className="bg-transparent p-0 hover:text-gray-600 transition-colors"
                   >
                     Koleksi
                   </button>
@@ -173,16 +173,13 @@ function Home({ onNavigate }) {
               <h4 className="font-semibold text-base mb-3">Ikuti Kami</h4>
               <div className="flex space-x-4 mt-2 text-lg">
                 <a href="#" className="hover:text-gray-600 transition-colors" aria-label="Website">
-                  🌐
+                  <img src="src\assets\whatsapp.png" alt="Whatsapp" class="h-6 w-6" />
                 </a>
                 <a href="#" className="hover:text-gray-600 transition-colors" aria-label="Twitter">
-                  🐦
+                  <img src="src\assets\twitter.png" alt="Twitter" class="h-6 w-6" />
                 </a>
                 <a href="#" className="hover:text-gray-600 transition-colors" aria-label="Instagram">
-                  📷
-                </a>
-                <a href="#" className="hover:text-gray-600 transition-colors" aria-label="YouTube">
-                  ▶️
+                  <img src="src\assets\instagram.png" alt="Instagram" class="h-6 w-6" />
                 </a>
               </div>
             </div>

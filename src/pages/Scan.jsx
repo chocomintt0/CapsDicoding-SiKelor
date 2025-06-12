@@ -762,11 +762,6 @@ export default function Scan({ onNavigate }) {
                       {cameraError ? "Error Kamera" : "Error API"}
                     </p>
                     <p className="text-red-600 text-xs md:text-sm">{cameraError || apiError}</p>
-                    {apiError && (
-                      <p className="text-red-500 text-xs mt-1">
-                        Pastikan FastAPI server berjalan di http://localhost:8000
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -790,10 +785,10 @@ export default function Scan({ onNavigate }) {
           </div>
 
           {/* Content Area - Bottom on mobile, Right on desktop */}
-          <div className="flex-1 p-4 md:p-6 xl:p-8">
+          <div className="flex-1 p-8 mx-16 md:p-6 xl:p-8 flex justify-center">
             <div
-              className="bg-[#475F45] rounded-3xl h-full flex items-center justify-center relative overflow-hidden transition-all duration-300"
-              style={{ minHeight: "400px" }}
+              className="bg-[#475F45] rounded-3xl h-[75%] w-[75%] flex items-center justify-center relative overflow-hidden transition-all duration-300"
+              style={{ minHeight: "400px", minWidth: "310px"}}
               data-camera-area
             >
               {renderCameraContent()}

@@ -103,7 +103,7 @@ export default function About({ onNavigate }) {
       name: "Andi Albukhari Fachrurrozi",
       role: "Fullstack Developer",
       position: "Frontend Engineer",
-      image: "/src/assets/dev/oci.jpg?height=300&width=300",
+      image: "src/assets/dev/ociii1.jpg",
       bio: "Mengelola infrastruktur cloud, deployment, dan monitoring sistem untuk memastikan aplikasi berjalan optimal.",
       social: {
         github: "https://github.com/rinamaharani",
