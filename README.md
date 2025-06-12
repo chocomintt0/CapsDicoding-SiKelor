@@ -47,7 +47,7 @@ cd nama-proyek
 
 1. **Download model dari Google Drive**:
    \`\`\`
-   https://drive.google.com/file/d/17u-zYto6uGj9nqtFhHEK9uDflcs0XLak/view?usp=sharing
+   https://drive.google.com/file/d/1j75Yiy1ZApYOUY7eqMBTxqVN2Xi6ZTKp/view?usp=drive_link
    \`\`\`
 
    > **Catatan**: Jika link tidak dapat diakses, hubungi tim developer untuk mendapatkan file model.
